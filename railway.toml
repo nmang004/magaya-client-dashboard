@@ -1,0 +1,17 @@
+[build]
+  builder = "nixpacks"
+  buildCommand = "cd server && npm install"
+  watchPatterns = ["server/**"]
+
+[deploy]
+  startCommand = "cd server && npm start"
+
+[[services]]
+  protocol = "tcp"
+  port = 5000
+
+[healthcheck]
+  path = "/health"
+  interval = 30
+  timeout = 10
+  retries = 3
