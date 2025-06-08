@@ -84,8 +84,16 @@ const Shipments: React.FC = () => {
         status: 'In Transit',
         statusColor: 'info',
         statusIcon: 'local_shipping',
-        origin: { port: 'Shanghai, China' },
-        destination: { port: 'Los Angeles, USA' },
+        origin: { 
+          port: 'Shanghai, China',
+          country: 'China',
+          coordinates: { lat: 31.2304, lng: 121.4737 }
+        },
+        destination: { 
+          port: 'Los Angeles, USA',
+          country: 'USA',
+          coordinates: { lat: 34.0522, lng: -118.2437 }
+        },
         carrier: { name: 'Maersk Line', logo: '/api/placeholder/24/24' },
         estimatedDelivery: '2024-06-15T00:00:00Z',
         cargo: { value: 125000 },
@@ -96,8 +104,16 @@ const Shipments: React.FC = () => {
         status: 'Delivered',
         statusColor: 'success',
         statusIcon: 'check_circle',
-        origin: { port: 'Singapore' },
-        destination: { port: 'New York, USA' },
+        origin: { 
+          port: 'Singapore',
+          country: 'Singapore',
+          coordinates: { lat: 1.3521, lng: 103.8198 }
+        },
+        destination: { 
+          port: 'New York, USA',
+          country: 'USA',
+          coordinates: { lat: 40.7128, lng: -74.0060 }
+        },
         carrier: { name: 'COSCO', logo: '/api/placeholder/24/24' },
         estimatedDelivery: '2024-06-10T00:00:00Z',
         cargo: { value: 89000 },
@@ -108,8 +124,16 @@ const Shipments: React.FC = () => {
         status: 'Pending',
         statusColor: 'warning',
         statusIcon: 'pending_actions',
-        origin: { port: 'Hong Kong' },
-        destination: { port: 'Hamburg, Germany' },
+        origin: { 
+          port: 'Hong Kong',
+          country: 'China',
+          coordinates: { lat: 22.3193, lng: 114.1694 }
+        },
+        destination: { 
+          port: 'Hamburg, Germany',
+          country: 'Germany',
+          coordinates: { lat: 53.5511, lng: 9.9937 }
+        },
         carrier: { name: 'MSC', logo: '/api/placeholder/24/24' },
         estimatedDelivery: '2024-06-20T00:00:00Z',
         cargo: { value: 156000 },
@@ -120,8 +144,16 @@ const Shipments: React.FC = () => {
         status: 'Customs Hold',
         statusColor: 'error',
         statusIcon: 'warning',
-        origin: { port: 'Dubai, UAE' },
-        destination: { port: 'Miami, USA' },
+        origin: { 
+          port: 'Dubai, UAE',
+          country: 'UAE',
+          coordinates: { lat: 25.2048, lng: 55.2708 }
+        },
+        destination: { 
+          port: 'Miami, USA',
+          country: 'USA',
+          coordinates: { lat: 25.7617, lng: -80.1918 }
+        },
         carrier: { name: 'CMA CGM', logo: '/api/placeholder/24/24' },
         estimatedDelivery: '2024-06-18T00:00:00Z',
         cargo: { value: 67000 },
@@ -132,8 +164,16 @@ const Shipments: React.FC = () => {
         status: 'In Transit',
         statusColor: 'info',
         statusIcon: 'local_shipping',
-        origin: { port: 'Tokyo, Japan' },
-        destination: { port: 'Seattle, USA' },
+        origin: { 
+          port: 'Tokyo, Japan',
+          country: 'Japan',
+          coordinates: { lat: 35.6762, lng: 139.6503 }
+        },
+        destination: { 
+          port: 'Seattle, USA',
+          country: 'USA',
+          coordinates: { lat: 47.6062, lng: -122.3321 }
+        },
         carrier: { name: 'ONE', logo: '/api/placeholder/24/24' },
         estimatedDelivery: '2024-06-12T00:00:00Z',
         cargo: { value: 198000 },

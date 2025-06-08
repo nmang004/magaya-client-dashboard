@@ -112,7 +112,13 @@ const RecentShipments: React.FC<RecentShipmentsProps> = ({ shipments, loading })
                   </Typography>
                   <FiberManualRecord sx={{ fontSize: 6, color: 'text.secondary' }} />
                   <Typography variant="caption" color="text.secondary">
-                    {format(new Date(shipment.createdAt), 'MMM dd')}
+                    {(() => {
+                      try {
+                        return shipment.createdAt ? format(new Date(shipment.createdAt), 'MMM dd') : 'No date';
+                      } catch {
+                        return 'Invalid date';
+                      }
+                    })()}
                   </Typography>
                 </Box>
               }
@@ -133,7 +139,13 @@ const RecentShipments: React.FC<RecentShipmentsProps> = ({ shipments, loading })
                       }}
                     />
                     <Typography variant="caption" color="text.secondary">
-                      ETA: {format(new Date(shipment.estimatedDelivery), 'MMM dd, yyyy')}
+                      ETA: {(() => {
+                        try {
+                          return shipment.estimatedDelivery ? format(new Date(shipment.estimatedDelivery), 'MMM dd, yyyy') : 'TBD';
+                        } catch {
+                          return 'Invalid date';
+                        }
+                      })()}
                     </Typography>
                   </Box>
                 </Box>

@@ -21,6 +21,23 @@ interface ShipmentChartProps {
 
 const ShipmentChart: React.FC<ShipmentChartProps> = ({ data, height = 350 }) => {
   const theme = useTheme();
+  
+  if (!data || data.length === 0) {
+    return (
+      <Box 
+        sx={{ 
+          height, 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          bgcolor: alpha(theme.palette.grey[100], 0.5),
+          borderRadius: 1
+        }}
+      >
+        <Typography color="text.secondary">No data available</Typography>
+      </Box>
+    );
+  }
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -85,25 +102,25 @@ const ShipmentChart: React.FC<ShipmentChartProps> = ({ data, height = 350 }) => 
       >
         <defs>
           <linearGradient id="shipmentGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor={theme.palette.primary.main} stopOpacity={0.3} />
-            <stop offset="95%" stopColor={theme.palette.primary.main} stopOpacity={0} />
+            <stop offset="5%" stopColor={theme.palette.primary.main} stopOpacity={0.4} />
+            <stop offset="95%" stopColor={theme.palette.primary.main} stopOpacity={0.1} />
           </linearGradient>
           <linearGradient id="deliveredGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor={theme.palette.success.main} stopOpacity={0.3} />
-            <stop offset="95%" stopColor={theme.palette.success.main} stopOpacity={0} />
+            <stop offset="5%" stopColor={theme.palette.success.main} stopOpacity={0.4} />
+            <stop offset="95%" stopColor={theme.palette.success.main} stopOpacity={0.1} />
           </linearGradient>
         </defs>
-        <CartesianGrid strokeDasharray="3 3" stroke={alpha(theme.palette.divider, 0.3)} />
+        <CartesianGrid strokeDasharray="3 3" stroke={alpha(theme.palette.divider, 0.5)} />
         <XAxis
           dataKey="month"
-          tick={{ fontSize: 12 }}
+          tick={{ fontSize: 12, fill: theme.palette.text.secondary }}
           tickLine={false}
-          axisLine={{ stroke: alpha(theme.palette.divider, 0.3) }}
+          axisLine={{ stroke: alpha(theme.palette.divider, 0.5) }}
         />
         <YAxis
-          tick={{ fontSize: 12 }}
+          tick={{ fontSize: 12, fill: theme.palette.text.secondary }}
           tickLine={false}
-          axisLine={{ stroke: alpha(theme.palette.divider, 0.3) }}
+          axisLine={{ stroke: alpha(theme.palette.divider, 0.5) }}
         />
         <Tooltip
           content={<CustomTooltip />}

@@ -79,11 +79,51 @@ const Dashboard: React.FC = () => {
 
   const recentShipments = {
     data: [
-      { id: '1', trackingNumber: 'SHP-001234', destination: 'Los Angeles', status: 'In Transit' },
-      { id: '2', trackingNumber: 'SHP-001235', destination: 'New York', status: 'Delivered' },
-      { id: '3', trackingNumber: 'SHP-001236', destination: 'Chicago', status: 'Pending' },
-      { id: '4', trackingNumber: 'SHP-001237', destination: 'Miami', status: 'In Transit' },
-      { id: '5', trackingNumber: 'SHP-001238', destination: 'Seattle', status: 'Delivered' }
+      { 
+        id: '1', 
+        trackingNumber: 'SHP-001234', 
+        status: 'In Transit',
+        origin: { port: 'Shanghai, China' },
+        destination: { port: 'Los Angeles, USA' },
+        createdAt: '2024-06-01T00:00:00Z',
+        estimatedDelivery: '2024-06-15T00:00:00Z'
+      },
+      { 
+        id: '2', 
+        trackingNumber: 'SHP-001235', 
+        status: 'Delivered',
+        origin: { port: 'Singapore' },
+        destination: { port: 'New York, USA' },
+        createdAt: '2024-05-28T00:00:00Z',
+        estimatedDelivery: '2024-06-10T00:00:00Z'
+      },
+      { 
+        id: '3', 
+        trackingNumber: 'SHP-001236', 
+        status: 'Pending',
+        origin: { port: 'Hong Kong' },
+        destination: { port: 'Chicago, USA' },
+        createdAt: '2024-06-03T00:00:00Z',
+        estimatedDelivery: '2024-06-18T00:00:00Z'
+      },
+      { 
+        id: '4', 
+        trackingNumber: 'SHP-001237', 
+        status: 'In Transit',
+        origin: { port: 'Dubai, UAE' },
+        destination: { port: 'Miami, USA' },
+        createdAt: '2024-06-02T00:00:00Z',
+        estimatedDelivery: '2024-06-16T00:00:00Z'
+      },
+      { 
+        id: '5', 
+        trackingNumber: 'SHP-001238', 
+        status: 'Delivered',
+        origin: { port: 'Tokyo, Japan' },
+        destination: { port: 'Seattle, USA' },
+        createdAt: '2024-05-30T00:00:00Z',
+        estimatedDelivery: '2024-06-12T00:00:00Z'
+      }
     ]
   };
 
