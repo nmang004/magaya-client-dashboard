@@ -1,10 +1,10 @@
 [build]
-  builder = "nixpacks"
-  buildCommand = "cd server && npm install"
-  watchPatterns = ["server/**"]
+  builder = "dockerfile"
+  dockerfilePath = "server/Dockerfile"
+  dockerContext = "server"
 
 [deploy]
-  startCommand = "cd server && npm start"
+  startCommand = "node server.js"
 
 [[services]]
   protocol = "tcp"
