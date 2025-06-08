@@ -27,7 +27,7 @@ const corsOptions = {
     const allowedOrigins = [
       'http://localhost:3000',
       'http://localhost:3001',
-      'https://your-app.netlify.app',
+      'https://wmstone.netlify.app',
       process.env.CLIENT_URL
     ];
     
