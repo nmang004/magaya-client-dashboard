@@ -1,59 +1,74 @@
-# W.M. Stone Command Center
+# Magaya Client Dashboard
 
-## Project Overview
+A modern, responsive client dashboard for Magaya logistics platform built with React, TypeScript, Node.js, and Express.
 
-The W.M. Stone Command Center is a modern web application designed to provide W.M. Stone Logistics clients with a comprehensive interface for managing and tracking their logistics operations. This full-stack application offers real-time visibility into shipments, customs clearance, and related logistics data for Norfolk's premier logistics company since 1907.
+## Features
+
+- 🚢 Real-time shipment tracking and management
+- 📊 Comprehensive analytics and reporting
+- 💰 Transaction and invoice management
+- 🗺️ Interactive shipment maps
+- 📱 Fully responsive design
+- 🔐 Secure authentication with JWT
+- 🎨 Beautiful UI with Material-UI and animations
 
 ## Tech Stack
 
 ### Frontend
-- React.js
-- Modern JavaScript (ES6+)
-- CSS3 with responsive design
+- React 18 with TypeScript
+- Material-UI v5
+- React Query for data fetching
+- Framer Motion for animations
+- Recharts for data visualization
+- React Router v6
 
 ### Backend
-- Node.js
-- Express.js
+- Node.js with Express
 - JWT authentication
-- RESTful API architecture
+- Mock data generation
+- RESTful API design
 
-### Security & Middleware
-- Helmet.js for security headers
-- CORS for cross-origin resource sharing
-- Express Rate Limiting for API protection
-- bcrypt for password hashing
-- JSON Web Tokens for authentication
-
-## Setup Instructions
+## Getting Started
 
 ### Prerequisites
-- Node.js (v14 or higher)
-- npm or yarn package manager
+- Node.js 18+ and npm
 - Git
 
 ### Installation
 
 1. Clone the repository:
 ```bash
-git clone [repository-url]
-cd wm-stone-command-center
+git clone https://github.com/yourusername/magaya-client-dashboard.git
+cd magaya-client-dashboard
 ```
 
-2. Install server dependencies:
+2. Install backend dependencies:
 ```bash
 cd server
 npm install
 ```
 
-3. Install client dependencies:
+3. Install frontend dependencies:
 ```bash
 cd ../client
 npm install
 ```
 
-4. Configure environment variables:
-- Copy `.env.example` to `.env` in the server directory
-- Update the environment variables with your specific values
+### Environment Setup
+
+1. Backend (.env):
+```
+PORT=5000
+JWT_SECRET=your-secret-key
+NODE_ENV=development
+CLIENT_URL=http://localhost:3000
+```
+
+2. Frontend (.env):
+```
+REACT_APP_API_URL=http://localhost:5000/api
+REACT_APP_ENVIRONMENT=development
+```
 
 ### Running the Application
 
@@ -63,36 +78,71 @@ cd server
 npm run dev
 ```
 
-2. Start the frontend application:
+2. Start the frontend development server:
 ```bash
 cd client
 npm start
 ```
 
-The backend server will run on http://localhost:5000 and the frontend on http://localhost:3000
+3. Open http://localhost:3000 in your browser
+
+### Demo Credentials
+- Email: demo@client1.com
+- Password: demo123
 
 ## Deployment
 
-### Production Build
+### Backend (Railway)
 
-1. Build the client application:
+1. Create a new project on Railway
+2. Connect your GitHub repository
+3. Set environment variables
+4. Deploy
+
+### Frontend (Netlify)
+
+1. Build the frontend:
 ```bash
 cd client
 npm run build
 ```
 
-2. Configure production environment variables on your hosting platform
+2. Deploy to Netlify:
+```bash
+netlify deploy --prod
+```
 
-3. Deploy the server application with production settings
+## API Documentation
 
-### Environment Variables
-Ensure all necessary environment variables are properly configured in production:
-- `JWT_SECRET`: Use a strong, unique secret key
-- `NODE_ENV`: Set to "production"
-- `CLIENT_URL`: Update to match your production frontend URL
+### Authentication
+- POST `/api/auth/login` - User login
+- GET `/api/auth/me` - Get current user
+- POST `/api/auth/refresh` - Refresh token
 
-### Security Considerations
-- Always use HTTPS in production
-- Keep dependencies updated
-- Implement proper logging and monitoring
-- Regular security audits
+### Shipments
+- GET `/api/shipments` - Get all shipments
+- GET `/api/shipments/:id` - Get shipment by ID
+- GET `/api/shipments/track/:trackingNumber` - Track shipment
+- GET `/api/shipments/:id/location` - Get real-time location
+
+### Analytics
+- GET `/api/analytics/overview` - Get analytics overview
+- GET `/api/analytics/trends/monthly` - Get monthly trends
+- GET `/api/analytics/routes/performance` - Get route performance
+
+### Transactions
+- GET `/api/transactions` - Get all transactions
+- GET `/api/transactions/:id` - Get transaction by ID
+- POST `/api/transactions/:id/mark-paid` - Mark as paid
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
+
+## License
+
+This project is licensed under the MIT License.
