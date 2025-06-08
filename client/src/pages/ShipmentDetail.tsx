@@ -53,7 +53,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import StatusChip from '../components/common/StatusChip';
 
 // Set Mapbox access token
-mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN || 'pk.eyJ1IjoidGVzdC11c2VyIiwiYSI6ImNsZXhhbXBsZSJ9.example-token';
+mapboxgl.accessToken = 'pk.eyJ1Ijoic2VvZGlyZWN0b3IiLCJhIjoiY21ibm51eGF4MGpiZzJvb2I5eGhxYmlnMyJ9.nK-8bmXVMKRCEXZF0BRV6w';
 
 // Temporary inline GlassCard to fix import issues
 const GlassCard: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -74,6 +74,173 @@ const GlassCard: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   </Card>
 );
 
+// Great Circle Distance Calculation
+const calculateGreatCircleDistance = (point1: [number, number], point2: [number, number]): number => {
+  const R = 6371; // Earth's radius in kilometers
+  const lat1 = point1[1] * Math.PI / 180;
+  const lat2 = point2[1] * Math.PI / 180;
+  const deltaLat = (point2[1] - point1[1]) * Math.PI / 180;
+  const deltaLng = (point2[0] - point1[0]) * Math.PI / 180;
+
+  const a = Math.sin(deltaLat/2) * Math.sin(deltaLat/2) +
+            Math.cos(lat1) * Math.cos(lat2) *
+            Math.sin(deltaLng/2) * Math.sin(deltaLng/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+  return R * c;
+};
+
+// Fixed Great Circle Route with proper Date Line handling
+const generateGreatCircleWaypoints = (start: [number, number], end: [number, number], numPoints: number = 8): [number, number][] => {
+  const waypoints: [number, number][] = [start];
+  
+  // Handle International Date Line crossing for Trans-Pacific routes
+  let adjustedEnd = [...end] as [number, number];
+  
+  // If crossing date line (Shanghai to LA case), adjust longitude for shortest path
+  if (start[0] > 100 && end[0] < -100) {
+    // Shanghai (121°E) to LA (-118°W) - go EAST across Pacific
+    adjustedEnd[0] = end[0] + 360; // Convert -118 to 242 for calculation
+  } else if (start[0] < -100 && end[0] > 100) {
+    // LA to Shanghai - go WEST across Pacific  
+    adjustedEnd[0] = end[0] - 360; // Convert for westward calculation
+  }
+  
+  for (let i = 1; i < numPoints - 1; i++) {
+    const fraction = i / (numPoints - 1);
+    
+    // Simple interpolation for maritime routes (more reliable than complex great circle)
+    const lat = start[1] + (adjustedEnd[1] - start[1]) * fraction;
+    let lng = start[0] + (adjustedEnd[0] - start[0]) * fraction;
+    
+    // Normalize longitude to -180 to 180 range
+    while (lng > 180) lng -= 360;
+    while (lng < -180) lng += 360;
+    
+    waypoints.push([lng, lat]);
+  }
+  
+  waypoints.push(end);
+  return waypoints;
+};
+
+// Professional Maritime Route Generator
+const generateMaritimeRoute = (origin: [number, number], destination: [number, number], progress: number = 0.6) => {
+  // Validate coordinates
+  if (!origin || !destination || origin.length !== 2 || destination.length !== 2) {
+    throw new Error('Invalid coordinates provided');
+  }
+
+  // Ensure proper coordinate format [longitude, latitude]
+  const startPort: [number, number] = [origin[0], origin[1]];
+  const endPort: [number, number] = [destination[0], destination[1]];
+
+  // Detect route type based on coordinates
+  const isTransPacific = (startPort[0] > 100 && endPort[0] < -100) || (startPort[0] < -100 && endPort[0] > 100);
+  const isTransAtlantic = Math.abs(startPort[0] - endPort[0]) > 60 && !isTransPacific;
+
+  let waypoints: [number, number][] = [];
+
+  if (isTransPacific) {
+    // Trans-Pacific Route - FIXED to go EASTWARD across Pacific
+    
+    // Calculate if we need to cross the International Date Line
+    const crossesDateLine = (startPort[0] > 100 && endPort[0] < -100);
+    
+    if (crossesDateLine) {
+      // Shanghai to LA: EASTWARD across Pacific (CRITICAL FIX)
+      waypoints = [
+        startPort,                    // Shanghai Port (121.4737°E, 31.2304°N)
+        [130, 33],                    // East China Sea (moving EAST)
+        [145, 36],                    // Western Pacific (continuing EAST)
+        [165, 39],                    // Central Pacific (still EAST)
+        [175, 41],                    // Near International Date Line (EAST)
+        [-175, 42],                   // Just past Date Line (continuing EAST)
+        [-160, 41],                   // Eastern Pacific (EAST)
+        [-145, 39],                   // Northeast Pacific (EAST)
+        [-130, 36],                   // Approaching California (EAST)
+        endPort                       // Los Angeles (-118.2437°W, 34.0522°N)
+      ];
+    } else {
+      // LA to Shanghai: WESTWARD across Pacific
+      waypoints = [
+        startPort,                    // Origin port
+        [startPort[0] + 15, startPort[1] + 6],  // Exit coastal waters
+        [-130, 40],                   // Northeast Pacific
+        [-145, 42],                   // Eastern Pacific  
+        [-160, 44],                   // Central Pacific
+        [-175, 45],                   // Near Date Line
+        [175, 44],                    // Past Date Line
+        [160, 42],                    // Western Pacific
+        [145, 40],                    // Western Pacific
+        [endPort[0] - 8, endPort[1] + 3],      // Approach coastal waters
+        endPort                       // Destination port
+      ];
+    }
+  } else if (isTransAtlantic) {
+    // Trans-Atlantic Route
+    if (startPort[0] < endPort[0]) {
+      // Americas to Europe/Africa
+      waypoints = [
+        startPort,
+        [startPort[0] + 20, startPort[1] + 5],
+        [-40, startPort[1] + 8],
+        [-20, (startPort[1] + endPort[1]) / 2],
+        [endPort[0] - 15, endPort[1]],
+        endPort
+      ];
+    } else {
+      // Europe/Africa to Americas
+      waypoints = [
+        startPort,
+        [startPort[0] - 15, startPort[1]],
+        [-20, (startPort[1] + endPort[1]) / 2],
+        [-40, endPort[1] + 5],
+        [endPort[0] + 20, endPort[1]],
+        endPort
+      ];
+    }
+  } else {
+    // Regional route - use great circle approximation
+    waypoints = generateGreatCircleWaypoints(startPort, endPort, 6);
+  }
+
+  // Calculate progress-based current position
+  const totalSegments = waypoints.length - 1;
+  const progressSegment = Math.min(progress * totalSegments, totalSegments - 0.1);
+  const segmentIndex = Math.floor(progressSegment);
+  const segmentProgress = progressSegment - segmentIndex;
+
+  // Interpolate between waypoints for smooth progress
+  let currentPosition: [number, number];
+  if (segmentIndex >= waypoints.length - 1) {
+    currentPosition = waypoints[waypoints.length - 1];
+  } else {
+    const currentWaypoint = waypoints[segmentIndex];
+    const nextWaypoint = waypoints[segmentIndex + 1];
+    currentPosition = [
+      currentWaypoint[0] + (nextWaypoint[0] - currentWaypoint[0]) * segmentProgress,
+      currentWaypoint[1] + (nextWaypoint[1] - currentWaypoint[1]) * segmentProgress
+    ];
+  }
+
+  // Generate completed route up to current position
+  const completedWaypoints = waypoints.slice(0, segmentIndex + 1);
+  if (segmentProgress > 0 && segmentIndex < waypoints.length - 1) {
+    completedWaypoints.push(currentPosition);
+  }
+
+  return {
+    fullRoute: waypoints,
+    completedRoute: completedWaypoints,
+    currentPosition,
+    origin: startPort,
+    destination: endPort,
+    totalDistance: calculateGreatCircleDistance(startPort, endPort),
+    completedDistance: calculateGreatCircleDistance(startPort, currentPosition)
+  };
+};
+
 // Maritime Tracking Map Component
 const MaritimeTrackingMap: React.FC<{ shipmentData: any }> = ({ shipmentData }) => {
   const mapContainer = React.useRef<HTMLDivElement>(null);
@@ -83,16 +250,46 @@ const MaritimeTrackingMap: React.FC<{ shipmentData: any }> = ({ shipmentData }) 
   React.useEffect(() => {
     if (!mapContainer.current) return;
 
-    // Initialize map with maritime styling
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/dark-v11', // Dark theme for maritime feel
-      center: [150, 35], // Pacific Ocean center point
-      zoom: 3,
-      pitch: 0,
-      bearing: 0,
-      projection: 'mercator' as any
-    });
+    // Extract and validate coordinates from shipment data
+    const originLng = shipmentData.origin?.lng || 121.4737; // Shanghai longitude
+    const originLat = shipmentData.origin?.lat || 31.2304;  // Shanghai latitude
+    const destLng = shipmentData.destination?.lng || -118.2437; // LA longitude
+    const destLat = shipmentData.destination?.lat || 34.0522;   // LA latitude
+
+    // Ensure proper coordinate format [longitude, latitude] for Mapbox
+    const origin: [number, number] = [originLng, originLat];
+    const destination: [number, number] = [destLng, destLat];
+    
+    // Validate coordinates are within valid ranges
+    if (Math.abs(originLng) > 180 || Math.abs(destLng) > 180 || 
+        Math.abs(originLat) > 90 || Math.abs(destLat) > 90) {
+      console.error('Invalid coordinates detected');
+      return;
+    }
+    
+    // Generate professional maritime route with 60% completion
+    const routeData = generateMaritimeRoute(origin, destination, 0.60);
+    
+    try {
+      // Calculate dynamic center point based on route
+      const routeBounds = new mapboxgl.LngLatBounds();
+      routeData.fullRoute.forEach(coord => routeBounds.extend(coord));
+      const routeCenter = routeBounds.getCenter();
+
+      // Initialize map with maritime styling - route-focused view
+      map.current = new mapboxgl.Map({
+        container: mapContainer.current,
+        style: 'mapbox://styles/mapbox/dark-v11', // Dark theme for better route visibility
+        center: [routeCenter.lng, routeCenter.lat], // Dynamic center based on route
+        zoom: 3, // Will be adjusted after route is loaded
+        pitch: 0,
+        bearing: 0,
+        projection: 'mercator' as any
+      });
+    } catch (error) {
+      console.error('Error initializing Mapbox:', error);
+      return;
+    }
 
     // Wait for map to load
     map.current.on('load', () => {
@@ -108,14 +305,7 @@ const MaritimeTrackingMap: React.FC<{ shipmentData: any }> = ({ shipmentData }) 
         10, '#334155'
       ]);
 
-      // Shanghai coordinates
-      const shanghaiForecast = [121.4737, 31.2304];
-      // Los Angeles coordinates  
-      const losAngelesCoords = [-118.2437, 34.0522];
-      // Current position (estimated)
-      const currentPosition = [165, 35];
-
-      // Add route line
+      // Add full maritime route
       map.current.addSource('route', {
         type: 'geojson',
         data: {
@@ -123,7 +313,7 @@ const MaritimeTrackingMap: React.FC<{ shipmentData: any }> = ({ shipmentData }) 
           properties: {},
           geometry: {
             type: 'LineString',
-            coordinates: [shanghaiForecast, currentPosition, losAngelesCoords]
+            coordinates: routeData.fullRoute
           }
         }
       });
@@ -136,12 +326,12 @@ const MaritimeTrackingMap: React.FC<{ shipmentData: any }> = ({ shipmentData }) 
           properties: {},
           geometry: {
             type: 'LineString',
-            coordinates: [shanghaiForecast, currentPosition]
+            coordinates: routeData.completedRoute
           }
         }
       });
 
-      // Add route styling
+      // Add planned route (remaining) - dashed white line
       map.current.addLayer({
         id: 'route-line',
         type: 'line',
@@ -151,29 +341,14 @@ const MaritimeTrackingMap: React.FC<{ shipmentData: any }> = ({ shipmentData }) 
           'line-cap': 'round'
         },
         paint: {
-          'line-color': 'rgba(148, 163, 184, 0.4)',
-          'line-width': 3,
-          'line-dasharray': [2, 2]
-        }
-      });
-
-      // Add completed route styling
-      map.current.addLayer({
-        id: 'completed-route-line',
-        type: 'line',
-        source: 'completed-route',
-        layout: {
-          'line-join': 'round',
-          'line-cap': 'round'
-        },
-        paint: {
-          'line-color': '#0ea5e9',
+          'line-color': '#ffffff',
           'line-width': 4,
-          'line-opacity': 0.8
+          'line-opacity': 0.7,
+          'line-dasharray': [4, 4]
         }
       });
 
-      // Add glow effect to completed route
+      // Add completed route glow effect
       map.current.addLayer({
         id: 'completed-route-glow',
         type: 'line',
@@ -183,23 +358,39 @@ const MaritimeTrackingMap: React.FC<{ shipmentData: any }> = ({ shipmentData }) 
           'line-cap': 'round'
         },
         paint: {
-          'line-color': '#0ea5e9',
-          'line-width': 8,
-          'line-opacity': 0.3,
+          'line-color': '#10b981',
+          'line-width': 10,
+          'line-opacity': 0.4,
           'line-blur': 2
         }
       });
 
-      // Origin Port Marker (Shanghai)
+      // Add completed route main line - solid green
+      map.current.addLayer({
+        id: 'completed-route-line',
+        type: 'line',
+        source: 'completed-route',
+        layout: {
+          'line-join': 'round',
+          'line-cap': 'round'
+        },
+        paint: {
+          'line-color': '#10b981',
+          'line-width': 5,
+          'line-opacity': 1
+        }
+      });
+
+      // Origin Port Marker
       const originMarker = new mapboxgl.Marker({
-        element: createPortMarker('#0ea5e9', '🏭')
+        element: createPortMarker('#10b981', '⚓')
       })
-        .setLngLat(shanghaiForecast)
+        .setLngLat(routeData.origin)
         .setPopup(
           new mapboxgl.Popup({ offset: 25, className: 'maritime-popup' })
             .setHTML(`
               <div style="padding: 12px; background: rgba(15, 23, 42, 0.95); color: white; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
-                <div style="color: #0ea5e9; font-weight: bold; margin-bottom: 4px;">${shipmentData.origin.port}</div>
+                <div style="color: #10b981; font-weight: bold; margin-bottom: 4px;">${shipmentData.origin.port}</div>
                 <div style="color: rgba(255,255,255,0.8); font-size: 12px;">Port of Origin</div>
                 <div style="color: #10b981; font-size: 11px; margin-top: 4px;">✓ Departed Jun 01</div>
               </div>
@@ -207,16 +398,16 @@ const MaritimeTrackingMap: React.FC<{ shipmentData: any }> = ({ shipmentData }) 
         )
         .addTo(map.current);
 
-      // Destination Port Marker (Los Angeles)
+      // Destination Port Marker
       const destMarker = new mapboxgl.Marker({
-        element: createPortMarker('#059669', '🏢')
+        element: createPortMarker('#f59e0b', '🏢')
       })
-        .setLngLat(losAngelesCoords)
+        .setLngLat(routeData.destination)
         .setPopup(
           new mapboxgl.Popup({ offset: 25, className: 'maritime-popup' })
             .setHTML(`
               <div style="padding: 12px; background: rgba(15, 23, 42, 0.95); color: white; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
-                <div style="color: #059669; font-weight: bold; margin-bottom: 4px;">${shipmentData.destination.port}</div>
+                <div style="color: #f59e0b; font-weight: bold; margin-bottom: 4px;">${shipmentData.destination.port}</div>
                 <div style="color: rgba(255,255,255,0.8); font-size: 12px;">Destination Port</div>
                 <div style="color: #f59e0b; font-size: 11px; margin-top: 4px;">⏱ ETA: Jun 15</div>
               </div>
@@ -229,7 +420,7 @@ const MaritimeTrackingMap: React.FC<{ shipmentData: any }> = ({ shipmentData }) 
         const vesselMarker = new mapboxgl.Marker({
           element: createVesselMarker()
         })
-          .setLngLat(currentPosition)
+          .setLngLat(routeData.currentPosition)
           .setPopup(
             new mapboxgl.Popup({ offset: 25, className: 'maritime-popup' })
               .setHTML(`
@@ -247,22 +438,48 @@ const MaritimeTrackingMap: React.FC<{ shipmentData: any }> = ({ shipmentData }) 
           .addTo(map.current);
       }
 
-      // Fit map to show the route
+      // Professional route-focused bounds fitting
       const bounds = new mapboxgl.LngLatBounds();
-      bounds.extend(shanghaiForecast);
-      bounds.extend(losAngelesCoords);
-      bounds.extend(currentPosition);
       
-      map.current.fitBounds(bounds, {
-        padding: { top: 100, bottom: 100, left: 100, right: 100 }
+      // Extend bounds for all route points to ensure full visibility
+      routeData.fullRoute.forEach(coord => {
+        if (coord && coord.length === 2 && !isNaN(coord[0]) && !isNaN(coord[1])) {
+          bounds.extend(coord);
+        }
       });
+      
+      // Add current position to bounds if it exists
+      if (routeData.currentPosition) {
+        bounds.extend(routeData.currentPosition);
+      }
+      
+      // Calculate optimal padding based on route type and distance
+      const isLongHaul = routeData.totalDistance > 8000; // 8000km+ is long-haul
+      const basePadding = isLongHaul ? 80 : 120;
+      
+      // Fit bounds with intelligent padding
+      setTimeout(() => {
+        if (map.current) {
+          map.current.fitBounds(bounds, {
+            padding: { 
+              top: basePadding, 
+              bottom: basePadding + 80, // Extra space for information panels
+              left: basePadding, 
+              right: basePadding + 100  // Extra space for navigation panels
+            },
+            maxZoom: isLongHaul ? 4 : 6,  // Appropriate zoom for route scale
+            minZoom: 1,
+            duration: 1500  // Smooth animation
+          });
+        }
+      }, 500); // Delay to ensure map is fully loaded
     });
 
     // Cleanup
     return () => {
       map.current?.remove();
     };
-  }, [shipmentData, theme]);
+  }, [shipmentData]);
 
   // Helper function to create port markers
   const createPortMarker = (color: string, emoji: string) => {
@@ -280,15 +497,19 @@ const MaritimeTrackingMap: React.FC<{ shipmentData: any }> = ({ shipmentData }) 
       cursor: pointer;
       box-shadow: 0 8px 32px rgba(14, 165, 233, 0.4), inset 0 2px 4px rgba(255,255,255,0.1);
       transition: all 0.3s ease;
+      position: relative;
+      transform-origin: center center;
     `;
     el.innerHTML = emoji;
     
     el.addEventListener('mouseenter', () => {
-      el.style.transform = 'scale(1.1)';
+      el.style.boxShadow = '0 12px 40px rgba(14, 165, 233, 0.6), inset 0 2px 4px rgba(255,255,255,0.2)';
+      el.style.borderWidth = '4px';
     });
     
     el.addEventListener('mouseleave', () => {
-      el.style.transform = 'scale(1)';
+      el.style.boxShadow = '0 8px 32px rgba(14, 165, 233, 0.4), inset 0 2px 4px rgba(255,255,255,0.1)';
+      el.style.borderWidth = '3px';
     });
     
     return el;
@@ -310,6 +531,8 @@ const MaritimeTrackingMap: React.FC<{ shipmentData: any }> = ({ shipmentData }) 
       box-shadow: 0 12px 40px rgba(37, 99, 235, 0.6), inset 0 2px 4px rgba(255,255,255,0.2);
       animation: vesselPulse 3s ease-in-out infinite;
       position: relative;
+      transform-origin: center center;
+      transition: all 0.3s ease;
     `;
     
     // Add vessel icon
@@ -318,6 +541,18 @@ const MaritimeTrackingMap: React.FC<{ shipmentData: any }> = ({ shipmentData }) 
         <path d="M21 6h-2l-1.27-3.18C17.53 2.34 17.04 2 16.5 2h-9C7.46 2 6.97 2.34 6.77 2.82L5.5 6H3c-.55 0-1 .45-1 1s.45 1 1 1h1.12L5 10v8c0 1.1.9 2 2 2h2c1.1 0 2-.9 2-2v-2h2v2c0 1.1.9 2 2 2h2c1.1 0 2-.9 2-2v-8l.88-2H21c.55 0 1-.45 1-1s-.45-1-1-1z"/>
       </svg>
     `;
+    
+    el.addEventListener('mouseenter', () => {
+      el.style.animationPlayState = 'paused';
+      el.style.boxShadow = '0 16px 48px rgba(37, 99, 235, 0.8), inset 0 2px 4px rgba(255,255,255,0.3)';
+      el.style.borderWidth = '5px';
+    });
+    
+    el.addEventListener('mouseleave', () => {
+      el.style.animationPlayState = 'running';
+      el.style.boxShadow = '0 12px 40px rgba(37, 99, 235, 0.6), inset 0 2px 4px rgba(255,255,255,0.2)';
+      el.style.borderWidth = '4px';
+    });
     
     return el;
   };
@@ -334,9 +569,21 @@ const MaritimeTrackingMap: React.FC<{ shipmentData: any }> = ({ shipmentData }) 
       },
       '& .mapboxgl-popup-tip': {
         borderTopColor: 'rgba(15, 23, 42, 0.95) !important'
+      },
+      '& .mapboxgl-canvas': {
+        left: 0,
+        top: 0
       }
     }}>
-      <div ref={mapContainer} style={{ height: '100%', width: '100%' }} />
+      <div 
+        ref={mapContainer} 
+        style={{ 
+          height: '100%', 
+          width: '100%', 
+          position: 'relative',
+          minHeight: '600px'
+        }} 
+      />
       
       {/* Add vessel pulse animation */}
       <style>{`
