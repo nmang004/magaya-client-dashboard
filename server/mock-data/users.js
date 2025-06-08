@@ -42,15 +42,15 @@ const users = [
   },
   {
     id: 3,
-    email: 'admin@magaya.com',
+    email: 'admin@wmstone.com',
     password: '$2a$10$zbl65b9/o0l798hiqzPZrOdwBFjWxQ3kZMgIVZgeAQ9YuQTOqBIma', // password: demo123
-    companyName: 'Magaya Corporation',
+    companyName: 'W.M. Stone Logistics, LLC',
     clientId: 'ADMIN001',
     role: 'admin',
     profile: {
       contactPerson: 'Admin User',
-      phone: '+1 (555) 000-0000',
-      address: 'Magaya HQ',
+      phone: '+1 (757) 800-6080',
+      address: '555 E. Main St, Suite 803, Norfolk, VA 23510',
       logo: 'https://via.placeholder.com/150',
       timezone: 'America/New_York',
       preferredCurrency: 'USD'

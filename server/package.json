@@ -1,7 +1,7 @@
 {
-  "name": "magaya-dashboard-server",
+  "name": "wm-stone-command-center-server",
   "version": "1.0.0",
-  "description": "Backend server for Magaya client dashboard",
+  "description": "Backend server for W.M. Stone Command Center",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

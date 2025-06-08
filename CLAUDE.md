@@ -1,7 +1,7 @@
-# Magaya Client Dashboard - Claude Code Reference
+# W.M. Stone Command Center - Claude Code Reference
 
 ## Project Overview
-Modern client dashboard for Magaya logistics platform with React/TypeScript frontend and Node.js/Express backend. Focus on beautiful UI/UX with animations and real-time updates.
+Modern logistics dashboard for W.M. Stone Logistics, LLC (since 1907) with React/TypeScript frontend and Node.js/Express backend. Features beautiful maritime-inspired UI/UX with W.M. Stone brand colors and Norfolk heritage.
 
 ## Quick Start
 ```bash
@@ -37,9 +37,25 @@ Password: demo123
 - **Mock data** - Realistic shipping data
 - **CORS enabled** for frontend
 
+## W.M. Stone Brand Guidelines
+
+### Brand Colors (MANDATORY)
+- **Primary Navy Blue**: #1e3a8a (headers, primary buttons, active states)
+- **Secondary Blue**: #1e40af (hover states, accents)
+- **Success Green**: #059669 (delivered shipments, positive metrics)
+- **Warning Orange**: #d97706 (pending shipments, alerts)
+- **Error Red**: #dc2626 (issues, errors)
+- **Info Blue**: #2563eb (active shipments, information)
+
+### Brand Identity
+- **Company**: W.M. Stone Logistics, LLC
+- **Heritage**: Founded 1907 - Norfolk's first customs broker
+- **Location**: Norfolk, Virginia (Port of Virginia)
+- **Services**: Customs Clearance, Ocean Freight, Trucking, Global Forwarding
+
 ## Project Structure
 ```
-magaya-client-dashboard/
+wm-stone-command-center/
 ├── client/                    # React frontend
 │   ├── src/
 │   │   ├── components/       # Reusable components
@@ -85,7 +101,19 @@ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
 >
 ```
 
-### 4. Loading States
+### 4. W.M. Stone Chart Colors
+```typescript
+const wmStoneColors = {
+  primary: '#1e3a8a',
+  secondary: '#1e40af',
+  success: '#059669',
+  warning: '#d97706',
+  error: '#dc2626',
+  info: '#2563eb'
+};
+```
+
+### 5. Loading States
 - Use Skeleton components for loading
 - Implement shimmer effects
 - Show progress for long operations

@@ -1,8 +1,8 @@
-# Magaya Client Dashboard
+# W.M. Stone Command Center
 
 ## Project Overview
 
-The Magaya Client Dashboard is a modern web application designed to provide clients with a comprehensive interface for managing and tracking their logistics operations. This full-stack application offers real-time visibility into shipments, inventory, and related logistics data.
+The W.M. Stone Command Center is a modern web application designed to provide W.M. Stone Logistics clients with a comprehensive interface for managing and tracking their logistics operations. This full-stack application offers real-time visibility into shipments, customs clearance, and related logistics data for Norfolk's premier logistics company since 1907.
 
 ## Tech Stack
 
@@ -36,7 +36,7 @@ The Magaya Client Dashboard is a modern web application designed to provide clie
 1. Clone the repository:
 ```bash
 git clone [repository-url]
-cd magaya-client-dashboard
+cd wm-stone-command-center
 ```
 
 2. Install server dependencies:
