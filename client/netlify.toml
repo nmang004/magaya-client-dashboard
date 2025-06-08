@@ -3,12 +3,12 @@
   publish = "build"
 
 [build.environment]
-  REACT_APP_API_URL = "https://your-app.railway.app/api"
+  REACT_APP_API_URL = "https://wmstone-command-center-production.up.railway.app/api"
   GENERATE_SOURCEMAP = "false"
 
 [[redirects]]
   from = "/api/*"
-  to = "https://your-app.railway.app/api/:splat"
+  to = "https://wmstone-command-center-production.up.railway.app/api/:splat"
   status = 200
 
 [[redirects]]
