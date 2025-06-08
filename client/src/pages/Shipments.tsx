@@ -225,13 +225,13 @@ const Shipments: React.FC = () => {
       field: 'origin',
       headerName: 'Origin',
       width: 180,
-      valueGetter: (params) => params.row.origin.port,
+      valueGetter: (value, row) => row.origin.port,
     },
     {
       field: 'destination',
       headerName: 'Destination',
       width: 180,
-      valueGetter: (params) => params.row.destination.port,
+      valueGetter: (value, row) => row.destination.port,
     },
     {
       field: 'carrier',
@@ -251,13 +251,13 @@ const Shipments: React.FC = () => {
       field: 'estimatedDelivery',
       headerName: 'ETA',
       width: 130,
-      valueFormatter: (params) => format(new Date(params.value), 'MMM dd, yyyy'),
+      valueFormatter: (value) => format(new Date(value), 'MMM dd, yyyy'),
     },
     {
       field: 'value',
       headerName: 'Value',
       width: 120,
-      valueGetter: (params) => `$${params.row.cargo.value.toLocaleString()}`,
+      valueGetter: (value, row) => `$${row.cargo.value.toLocaleString()}`,
     },
     {
       field: 'actions',

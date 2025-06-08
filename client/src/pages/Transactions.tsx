@@ -259,13 +259,13 @@ const Transactions: React.FC = () => {
       field: 'issueDate',
       headerName: 'Issue Date',
       width: 120,
-      valueFormatter: (params) => format(new Date(params.value), 'MMM dd, yyyy'),
+      valueFormatter: (value) => format(new Date(value), 'MMM dd, yyyy'),
     },
     {
       field: 'dueDate',
       headerName: 'Due Date',
       width: 120,
-      valueFormatter: (params) => format(new Date(params.value), 'MMM dd, yyyy'),
+      valueFormatter: (value) => format(new Date(value), 'MMM dd, yyyy'),
     },
     {
       field: 'actions',
