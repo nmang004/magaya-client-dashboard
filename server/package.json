@@ -8,7 +8,6 @@
     "dev": "nodemon server.js",
     "test": "jest",
     "lint": "eslint .",
-    "prepare": "npm run lint",
     "seed": "node scripts/seed.js",
     "clean": "rm -rf node_modules package-lock.json && npm install"
   },
