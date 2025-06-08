@@ -6,9 +6,6 @@ const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
-// Import routes
-const authRoutes = require('./routes/auth');
-
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -29,7 +26,7 @@ const corsOptions = {
   origin: function (origin, callback) {
     const allowedOrigins = [
       'http://localhost:3000',
-      'https://your-app.netlify.app', // Update with your Netlify URL
+      'https://your-app.netlify.app',
       process.env.CLIENT_URL
     ];
     
@@ -77,12 +74,21 @@ app.get('/health', (req, res) => {
 });
 
 // API routes
-app.use('/api/auth', authRoutes);
+const authRoutes = require('./routes/auth');
+const shipmentsRoutes = require('./routes/shipments');
+const analyticsRoutes = require('./routes/analytics');
+const transactionsRoutes = require('./routes/transactions');
+const documentsRoutes = require('./routes/documents');
+const notificationsRoutes = require('./routes/notifications');
+const exportRoutes = require('./routes/export');
 
-// Additional routes (to be added)
-// app.use('/api/shipments', require('./routes/shipments'));
-// app.use('/api/transactions', require('./routes/transactions'));
-// app.use('/api/analytics', require('./routes/analytics'));
+app.use('/api/auth', authRoutes);
+app.use('/api/shipments', shipmentsRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/transactions', transactionsRoutes);
+app.use('/api/documents', documentsRoutes);
+app.use('/api/notifications', notificationsRoutes);
+app.use('/api/export', exportRoutes);
 
 // 404 handler
 app.use((req, res) => {
@@ -112,6 +118,17 @@ app.listen(PORT, () => {
     🔧 Environment: ${process.env.NODE_ENV}
     📡 Port: ${PORT}
     🏥 Health check: http://localhost:${PORT}/health
+    
+    Available endpoints:
+    - POST   /api/auth/login
+    - GET    /api/auth/me
+    - POST   /api/auth/refresh
+    - GET    /api/shipments
+    - GET    /api/analytics/overview
+    - GET    /api/transactions
+    - GET    /api/documents
+    - GET    /api/notifications
+    - GET    /api/export/:type/:format
   `);
 });
 
