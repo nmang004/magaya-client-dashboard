@@ -18,6 +18,7 @@ import './styles/globalStyles.scss';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import DashboardLayout from './components/layout/DashboardLayout';
 import PageLoader from './components/common/Loading/PageLoader';
+import ErrorBoundary from './components/common/ErrorBoundary';
 
 // Lazy load pages for better performance
 const Login = lazy(() => import('./pages/Login'));
@@ -44,10 +45,11 @@ const queryClient = new QueryClient({
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <AuthProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <AuthProvider>
             <SnackbarProvider
               maxSnack={3}
               anchorOrigin={{
@@ -112,11 +114,12 @@ function App() {
               />
             </SnackbarProvider>
           </AuthProvider>
-      </ThemeProvider>
-      
-      {/* React Query Devtools */}
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
+        </ThemeProvider>
+        
+        {/* React Query Devtools */}
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 
