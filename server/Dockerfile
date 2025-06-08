@@ -4,11 +4,11 @@ FROM node:18-alpine
 WORKDIR /usr/src/app
 
 # Install app dependencies
-COPY package.json package-lock.json ./
+COPY server/package.json server/package-lock.json ./
 RUN npm install --omit=dev
 
 # Copy app source
-COPY . .
+COPY server/ .
 
 # Expose port
 EXPOSE 5000
