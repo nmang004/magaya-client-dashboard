@@ -27,18 +27,8 @@ export type PaymentMethod =
   | 'Other';
 
 export interface LineItem {
-  id: string;
-  description: string;
-  quantity: number;
-  unit: string;
-  unitPrice: number;
-  discount: number;
-  discountType: 'percentage' | 'fixed';
-  taxRate: number;
-  taxAmount: number;
-  totalAmount: number;
-  serviceCode?: string;
-  shipmentId?: string;
+  name: string;
+  amount: number;
 }
 
 export interface PaymentRecord {
@@ -70,6 +60,52 @@ export interface TaxSummary {
 }
 
 export interface Transaction {
+  id: string;
+  type: 'Invoice' | 'Credit Note' | 'Debit Note' | 'Payment Receipt';
+  status: 'paid' | 'pending' | 'overdue' | 'cancelled';
+  shipmentId: string;
+  invoiceNumber: string;
+  
+  lineItems: LineItem[];
+  subtotal: number;
+  tax: number;
+  total: number;
+  currency: string;
+  
+  issueDate: Date;
+  dueDate: Date;
+  paidDate: Date | null;
+  
+  paymentMethod: string;
+  paymentReference: string | null;
+  
+  notes: string | null;
+  attachments: number;
+}
+
+export interface TransactionSummary {
+  totalAmount: number;
+  paidAmount: number;
+  pendingAmount: number;
+  overdueAmount: number;
+  totalTransactions: number;
+  byStatus: {
+    [key: string]: number;
+  };
+}
+
+export interface Payment {
+  id: string;
+  transactionId: string;
+  amount: number;
+  method: string;
+  reference: string;
+  date: Date;
+  status: 'completed' | 'pending' | 'failed';
+}
+
+// Extended interfaces for backward compatibility
+export interface ExtendedTransaction {
   id: string;
   number: string;
   type: TransactionType;
@@ -103,7 +139,7 @@ export interface Transaction {
   // Financial Details
   currency: string;
   exchangeRate?: number;
-  lineItems: LineItem[];
+  lineItems: ExtendedLineItem[];
   tax: TaxSummary;
   
   // Payment Information
@@ -154,49 +190,19 @@ export interface Transaction {
   rejectionReason?: string;
 }
 
-export interface TransactionSummary {
-  totalInvoices: number;
+export interface ExtendedLineItem {
+  id: string;
+  description: string;
+  quantity: number;
+  unit: string;
+  unitPrice: number;
+  discount: number;
+  discountType: 'percentage' | 'fixed';
+  taxRate: number;
+  taxAmount: number;
   totalAmount: number;
-  paidAmount: number;
-  pendingAmount: number;
-  overdueAmount: number;
-  
-  byStatus: Array<{
-    status: TransactionStatus;
-    count: number;
-    amount: number;
-  }>;
-  
-  byMonth: Array<{
-    month: string;
-    invoiced: number;
-    paid: number;
-    pending: number;
-  }>;
-  
-  topClients: Array<{
-    id: string;
-    name: string;
-    totalAmount: number;
-    paidAmount: number;
-    pendingAmount: number;
-  }>;
-  
-  agingReport: Array<{
-    range: string;
-    count: number;
-    amount: number;
-  }>;
-  
-  paymentMethods: Array<{
-    method: PaymentMethod;
-    count: number;
-    amount: number;
-  }>;
-  
-  averagePaymentTime: number;
-  collectionEfficiency: number;
-  lastUpdated: Date;
+  serviceCode?: string;
+  shipmentId?: string;
 }
 
 export interface TransactionFilters {

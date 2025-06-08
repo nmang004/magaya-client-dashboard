@@ -1,80 +1,40 @@
 export interface AnalyticsOverview {
   totalShipments: number;
   activeShipments: number;
-  deliveredShipments: number;
-  delayedShipments: number;
-  totalRevenue: number;
-  monthlyRevenue: number;
-  revenueGrowth: number;
-  averageTransitTime: number;
+  deliveredThisMonth: number;
+  pendingShipments: number;
+  
   onTimeDeliveryRate: number;
+  averageTransitTime: number;
   customerSatisfaction: number;
-  topRoutes: Array<{
-    route: string;
-    shipments: number;
-    revenue: number;
-  }>;
-  topCarriers: Array<{
-    name: string;
-    shipments: number;
-    onTimeRate: number;
-  }>;
+  
+  totalRevenue: number;
+  outstandingPayments: number;
+  averageShipmentValue: number;
 }
 
 export interface MonthlyTrend {
   month: string;
-  year: number;
   shipments: number;
+  delivered: number;
   revenue: number;
-  averageTransitTime: number;
-  onTimeRate: number;
-  delays: number;
-  customerSatisfaction: number;
+  onTimeDelivery: number;
 }
 
 export interface RoutePerformance {
-  id: string;
   route: string;
-  origin: string;
-  destination: string;
   shipments: number;
-  revenue: number;
-  averageTransitTime: number;
+  avgTransitTime: number;
   onTimeRate: number;
-  delayRate: number;
-  trend: number; // percentage change
-  lastUpdated: Date;
-  carriers: Array<{
-    name: string;
-    shipments: number;
-    performance: number;
-  }>;
+  revenue: number;
 }
 
 export interface CarrierPerformance {
-  id: string;
-  name: string;
-  code: string;
-  totalShipments: number;
-  activeShipments: number;
-  completedShipments: number;
-  onTimeDeliveries: number;
+  carrier: string;
+  shipments: number;
   onTimeRate: number;
-  averageTransitTime: number;
-  averageDelay: number;
-  revenue: number;
-  customerRating: number;
-  lastShipment: Date;
-  trend: {
-    shipments: number;
-    onTimeRate: number;
-    revenue: number;
-  };
-  routes: Array<{
-    route: string;
-    shipments: number;
-    performance: number;
-  }>;
+  avgRating: number;
+  incidents: number;
 }
 
 export interface ShipmentDistribution {
@@ -82,28 +42,9 @@ export interface ShipmentDistribution {
     status: string;
     count: number;
     percentage: number;
-    value: number;
   }>;
-  byType: Array<{
-    type: string;
-    count: number;
-    percentage: number;
-    revenue: number;
-  }>;
-  byServiceLevel: Array<{
-    level: string;
-    count: number;
-    percentage: number;
-    averageTransitTime: number;
-  }>;
-  byRegion: Array<{
-    region: string;
-    shipments: number;
-    revenue: number;
-    growth: number;
-  }>;
-  byMonth: Array<{
-    month: string;
+  topDestinations: Array<{
+    destination: string;
     shipments: number;
     revenue: number;
   }>;
@@ -111,27 +52,16 @@ export interface ShipmentDistribution {
 
 export interface RecentActivity {
   id: string;
-  type: 'shipment_created' | 'shipment_delivered' | 'delay_reported' | 'payment_received' | 'document_uploaded';
-  title: string;
+  type: 'shipment_created' | 'payment_received' | 'delivery_completed' | 'document_uploaded';
   description: string;
   timestamp: Date;
-  shipmentId?: string;
-  userId?: string;
-  metadata?: Record<string, any>;
-  severity: 'info' | 'warning' | 'success' | 'error';
 }
 
 export interface PerformanceMetric {
-  name: string;
+  label: string;
   value: number;
-  unit: string;
-  trend: number;
-  target?: number;
-  status: 'good' | 'warning' | 'critical';
-  history: Array<{
-    date: Date;
-    value: number;
-  }>;
+  change: number;
+  trend: 'up' | 'down' | 'stable';
 }
 
 export interface GeographicData {

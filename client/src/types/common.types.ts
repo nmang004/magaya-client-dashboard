@@ -1,11 +1,14 @@
 export interface PaginatedResponse<T> {
+  success: boolean;
   data: T[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-  hasNext: boolean;
-  hasPrevious: boolean;
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+  stats?: any;
+  filters?: any;
 }
 
 export interface QueryParams {
@@ -14,11 +17,26 @@ export interface QueryParams {
   search?: string;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
-  filters?: Record<string, any>;
-  startDate?: string;
-  endDate?: string;
+  [key: string]: any;
 }
 
+export interface ApiError {
+  error: string;
+  code: string;
+  status: number;
+}
+
+export interface Notification {
+  id: string;
+  title: string;
+  description: string;
+  type: 'info' | 'success' | 'warning' | 'error';
+  read: boolean;
+  timestamp: Date;
+  link?: string;
+}
+
+// Legacy interface for backward compatibility
 export interface ApiResponse<T> {
   success: boolean;
   data: T;

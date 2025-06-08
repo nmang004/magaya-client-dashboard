@@ -1,13 +1,148 @@
-import { Location, Port } from './common.types';
+export interface Shipment {
+  id: string;
+  trackingNumber: string;
+  referenceNumber: string;
+  status: ShipmentStatus;
+  statusColor: string;
+  statusIcon: string;
+  
+  origin: Location;
+  destination: Location;
+  
+  carrier: Carrier;
+  
+  createdAt: Date;
+  estimatedDelivery: Date;
+  actualDelivery: Date | null;
+  lastUpdated: Date;
+  
+  container: Container;
+  cargo: Cargo;
+  
+  incoterm: string;
+  paymentStatus: 'paid' | 'pending';
+  
+  events: ShipmentEvent[];
+  documents: Document[];
+  
+  clientId: string;
+  consignee: string;
+  shipper: string;
+  
+  priority: 'high' | 'medium' | 'normal';
+  tags: string[];
+  notes: string | null;
+}
+
+export interface Location {
+  port: string;
+  code: string;
+  country: string;
+  coordinates: {
+    lat: number;
+    lng: number;
+  };
+  warehouse?: string;
+}
+
+export interface Carrier {
+  name: string;
+  logo: string;
+  rating: number;
+  vesselName: string;
+  voyageNumber: string;
+}
+
+export interface Container {
+  number: string;
+  type: string;
+  sealNumber: string;
+}
+
+export interface Cargo {
+  type: string;
+  description: string;
+  weight: number;
+  weightUnit: string;
+  volume: number;
+  volumeUnit: string;
+  value: number;
+  currency: string;
+  insurance: boolean;
+  hazardous: boolean;
+}
+
+export interface ShipmentEvent {
+  id: string;
+  status: string;
+  timestamp: Date;
+  location: string;
+  description: string;
+  icon: string;
+  completed: boolean;
+}
+
+export interface Document {
+  id: string;
+  name: string;
+  type: string;
+  icon: string;
+  uploadDate: Date;
+  size: string;
+  status: 'approved' | 'pending' | 'rejected';
+  url: string;
+}
+
+export interface ShipmentLocation {
+  shipmentId: string;
+  currentLocation: {
+    lat: number;
+    lng: number;
+    timestamp: Date;
+    speed: number;
+    heading: number;
+  };
+  progress: number;
+  estimatedArrival: Date;
+  lastUpdate: Date;
+}
+
+export interface TrackingInfo {
+  trackingNumber: string;
+  status: string;
+  statusColor: string;
+  statusIcon: string;
+  origin: Location;
+  destination: Location;
+  estimatedDelivery: Date;
+  actualDelivery: Date | null;
+  events: ShipmentEvent[];
+  currentLocation?: {
+    lat: number;
+    lng: number;
+  };
+}
 
 export type ShipmentStatus = 
   | 'Pending'
-  | 'Processing' 
+  | 'Processing'
   | 'In Transit'
-  | 'Customs'
+  | 'Customs Hold'
+  | 'Out for Delivery'
   | 'Delivered'
   | 'Delayed'
-  | 'Cancelled';
+  | 'Returned';
+
+// Legacy types for backward compatibility with existing code
+export interface Port {
+  code: string;
+  name: string;
+  country: string;
+  coordinates?: {
+    lat: number;
+    lng: number;
+  };
+}
 
 export type ShipmentType = 
   | 'Ocean Freight'
@@ -21,16 +156,6 @@ export type ServiceLevel =
   | 'Standard'
   | 'Economy';
 
-export interface Container {
-  id: string;
-  number: string;
-  type: string;
-  size: string;
-  weight: number;
-  seal: string;
-  status: string;
-}
-
 export interface Commodity {
   id: string;
   description: string;
@@ -42,47 +167,8 @@ export interface Commodity {
   currency: string;
 }
 
-export interface ShipmentEvent {
-  id: string;
-  timestamp: Date;
-  location: Location;
-  status: ShipmentStatus;
-  description: string;
-  details?: string;
-  isEstimated: boolean;
-}
-
-export interface ShipmentLocation {
-  current: Location;
-  timestamp: Date;
-  vessel?: {
-    name: string;
-    imo: string;
-    flag: string;
-    type: string;
-  };
-  estimatedArrival?: Date;
-  nextPort?: Port;
-}
-
-export interface TrackingInfo {
-  shipmentId: string;
-  trackingNumber: string;
-  status: ShipmentStatus;
-  currentLocation: Location;
-  events: ShipmentEvent[];
-  estimatedDelivery: Date;
-  actualDelivery?: Date;
-  milestones: {
-    booked: Date;
-    departed: Date;
-    inTransit: Date;
-    customsClearance?: Date;
-    delivered?: Date;
-  };
-}
-
-export interface Shipment {
+// Extended Shipment interface for complex operations
+export interface ExtendedShipment {
   id: string;
   trackingNumber: string;
   referenceNumber?: string;
@@ -126,7 +212,7 @@ export interface Shipment {
   };
   
   // Cargo
-  containers: Container[];
+  containers: LegacyContainer[];
   commodities: Commodity[];
   totalWeight: number;
   totalVolume: number;
@@ -149,7 +235,7 @@ export interface Shipment {
   taxAmount?: number;
   
   // Tracking
-  currentLocation?: Location;
+  currentLocation?: Port;
   events: ShipmentEvent[];
   milestones: {
     booked: boolean;
@@ -176,6 +262,17 @@ export interface Shipment {
   internalReference?: string;
   clientId: string;
   assignedTo?: string;
+}
+
+// Legacy Container interface for backward compatibility
+export interface LegacyContainer {
+  id: string;
+  number: string;
+  type: string;
+  size: string;
+  weight: number;
+  seal: string;
+  status: string;
 }
 
 export interface ShipmentFilters {
