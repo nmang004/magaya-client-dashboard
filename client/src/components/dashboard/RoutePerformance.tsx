@@ -24,6 +24,8 @@ import {
 import { motion } from 'framer-motion';
 import { GlassCard } from '../common/Cards/GlassCard';
 
+const MotionTableRow = motion(TableRow);
+
 const RoutePerformance: React.FC = () => {
   const theme = useTheme();
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
@@ -116,24 +118,21 @@ const RoutePerformance: React.FC = () => {
             </TableHead>
             <TableBody>
               {routes.map((route, index) => (
-                <motion.div
+                <MotionTableRow
                   key={route.id}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  style={{ display: 'contents' }}
+                  onMouseEnter={() => setHoveredRow(route.id)}
+                  onMouseLeave={() => setHoveredRow(null)}
+                  sx={{
+                    backgroundColor: hoveredRow === route.id
+                      ? alpha(theme.palette.primary.main, 0.04)
+                      : 'transparent',
+                    transition: 'background-color 0.2s',
+                    cursor: 'pointer',
+                  }}
                 >
-                  <TableRow
-                    onMouseEnter={() => setHoveredRow(route.id)}
-                    onMouseLeave={() => setHoveredRow(null)}
-                    sx={{
-                      backgroundColor: hoveredRow === route.id
-                        ? alpha(theme.palette.primary.main, 0.04)
-                        : 'transparent',
-                      transition: 'background-color 0.2s',
-                      cursor: 'pointer',
-                    }}
-                  >
                   <TableCell>
                     <Typography variant="body2" fontWeight={600}>
                       {route.route}
@@ -205,8 +204,7 @@ const RoutePerformance: React.FC = () => {
                       ${route.revenue.toLocaleString()}
                     </Typography>
                   </TableCell>
-                  </TableRow>
-                </motion.div>
+                  </MotionTableRow>
               ))}
             </TableBody>
           </Table>

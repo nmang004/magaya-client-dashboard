@@ -51,7 +51,7 @@ const DeliveryPerformance: React.FC<DeliveryPerformanceProps> = ({ timeRange }) 
             {label}
           </Typography>
           {payload.map((entry: any, index: number) => (
-            <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Box key={`payload-${entry.dataKey}-${index}`} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Box
                 sx={{
                   width: 8,
@@ -61,7 +61,7 @@ const DeliveryPerformance: React.FC<DeliveryPerformanceProps> = ({ timeRange }) 
                 }}
               />
               <Typography variant="caption">
-                {entry.name}: {entry.value.toFixed(1)}%
+                {entry.name}: {isNaN(entry.value) ? '0.0' : entry.value.toFixed(1)}%
               </Typography>
             </Box>
           ))}

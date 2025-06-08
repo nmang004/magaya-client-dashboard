@@ -68,6 +68,9 @@ const TransactionSummary: React.FC<TransactionSummaryProps> = ({ data, loading }
   ];
 
   const formatValue = (value: number, format: string) => {
+    if (isNaN(value)) {
+      return format === 'currency' ? '$0' : '0';
+    }
     if (format === 'currency') {
       return `$${value.toLocaleString()}`;
     }

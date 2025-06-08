@@ -92,7 +92,7 @@ const ShipmentTrendsChart: React.FC<ShipmentTrendsChartProps> = ({
             {label}
           </Typography>
           {payload.map((entry: any, index: number) => (
-            <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Box key={`tooltip-${entry.dataKey}-${index}`} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Box
                 sx={{
                   width: 8,
@@ -102,7 +102,7 @@ const ShipmentTrendsChart: React.FC<ShipmentTrendsChartProps> = ({
                 }}
               />
               <Typography variant="caption">
-                {entry.name}: {entry.name === 'Revenue' ? `$${entry.value.toLocaleString()}` : entry.value}
+                {entry.name}: {entry.name === 'Revenue' ? `$${isNaN(entry.value) ? '0' : entry.value.toLocaleString()}` : (isNaN(entry.value) ? '0' : entry.value)}
                 {entry.name === 'On-Time Delivery' ? '%' : ''}
               </Typography>
             </Box>

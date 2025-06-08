@@ -12,8 +12,8 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ revenue, outstanding }) => 
   const theme = useTheme();
 
   const data = [
-    { name: 'Collected', value: revenue - outstanding, color: '#059669' },
-    { name: 'Outstanding', value: outstanding, color: '#d97706' },
+    { name: 'Collected', value: isNaN(revenue - outstanding) ? 0 : revenue - outstanding, color: '#059669' },
+    { name: 'Outstanding', value: isNaN(outstanding) ? 0 : outstanding, color: '#d97706' },
   ];
 
   const CustomTooltip = ({ active, payload }: any) => {
@@ -31,7 +31,7 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ revenue, outstanding }) => 
             {payload[0].name}
           </Typography>
           <Typography variant="body2" color={payload[0].payload.color}>
-            ${payload[0].value.toLocaleString()}
+            ${isNaN(payload[0].value) ? '0' : payload[0].value.toLocaleString()}
           </Typography>
         </Box>
       );
@@ -41,9 +41,19 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ revenue, outstanding }) => 
 
   const RADIAN = Math.PI / 180;
   const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
+    // Validate inputs to prevent NaN values
+    if (!cx || !cy || !midAngle || !innerRadius || !outerRadius || !percent) {
+      return null;
+    }
+    
     const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    // Additional check for NaN values
+    if (isNaN(x) || isNaN(y) || isNaN(percent)) {
+      return null;
+    }
 
     return (
       <text
@@ -63,7 +73,7 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ revenue, outstanding }) => 
     <Box>
       <Box sx={{ mb: 3, textAlign: 'center' }}>
         <Typography variant="h4" fontWeight={700}>
-          ${revenue.toLocaleString()}
+          ${isNaN(revenue) ? '0' : revenue.toLocaleString()}
         </Typography>
         <Typography variant="body2" color="text.secondary">
           Total Revenue
@@ -82,8 +92,8 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ revenue, outstanding }) => 
             fill="#8884d8"
             dataKey="value"
           >
-            {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.color} />
+            {data.map((entry) => (
+              <Cell key={`cell-${entry.name}`} fill={entry.color} />
             ))}
           </Pie>
           <Tooltip content={<CustomTooltip />} />
@@ -122,7 +132,7 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ revenue, outstanding }) => 
                 <Typography variant="body2">{item.name}</Typography>
               </Box>
               <Typography variant="body2" fontWeight={600}>
-                ${item.value.toLocaleString()}
+                ${isNaN(item.value) ? '0' : item.value.toLocaleString()}
               </Typography>
             </Box>
           </motion.div>

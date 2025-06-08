@@ -107,11 +107,11 @@ const RecentShipments: React.FC<RecentShipmentsProps> = ({ shipments, loading })
             <ListItemText
               primary={
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Typography variant="subtitle2" fontWeight={600}>
+                  <Typography variant="subtitle2" fontWeight={600} component="span">
                     {shipment.trackingNumber}
                   </Typography>
                   <FiberManualRecord sx={{ fontSize: 6, color: 'text.secondary' }} />
-                  <Typography variant="caption" color="text.secondary">
+                  <Typography variant="caption" color="text.secondary" component="span">
                     {(() => {
                       try {
                         return shipment.createdAt ? format(new Date(shipment.createdAt), 'MMM dd') : 'No date';
@@ -124,7 +124,7 @@ const RecentShipments: React.FC<RecentShipmentsProps> = ({ shipments, loading })
               }
               secondary={
                 <Box sx={{ mt: 0.5 }}>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" color="text.secondary" component="div">
                     {shipment.origin.port} → {shipment.destination.port}
                   </Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
@@ -138,7 +138,7 @@ const RecentShipments: React.FC<RecentShipmentsProps> = ({ shipments, loading })
                         height: 24,
                       }}
                     />
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography variant="caption" color="text.secondary" component="span">
                       ETA: {(() => {
                         try {
                           return shipment.estimatedDelivery ? format(new Date(shipment.estimatedDelivery), 'MMM dd, yyyy') : 'TBD';
@@ -150,6 +150,8 @@ const RecentShipments: React.FC<RecentShipmentsProps> = ({ shipments, loading })
                   </Box>
                 </Box>
               }
+              primaryTypographyProps={{ component: 'div' }}
+              secondaryTypographyProps={{ component: 'div' }}
             />
             
             <IconButton

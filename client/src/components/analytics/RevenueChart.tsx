@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Typography, useTheme } from '@mui/material';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 
 interface RevenueChartProps {
   data: any;
@@ -56,10 +56,20 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data }) => {
   };
 
   const CustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
+    // Validate inputs to prevent NaN values
+    if (!cx || !cy || !midAngle || !innerRadius || !outerRadius || !percent) {
+      return null;
+    }
+    
     const RADIAN = Math.PI / 180;
     const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    // Additional check for NaN values
+    if (isNaN(x) || isNaN(y) || isNaN(percent)) {
+      return null;
+    }
 
     return percent > 0.05 ? (
       <text
@@ -79,23 +89,25 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data }) => {
   return (
     <Box>
       <Box sx={{ height: 300, mb: 2 }}>
-        <PieChart width={300} height={300}>
-          <Pie
-            data={revenueData}
-            cx={150}
-            cy={150}
-            labelLine={false}
-            label={CustomLabel}
-            outerRadius={80}
-            fill="#8884d8"
-            dataKey="value"
-          >
-            {revenueData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-            ))}
-          </Pie>
-          <Tooltip content={<CustomTooltip />} />
-        </PieChart>
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={revenueData}
+              cx="50%"
+              cy="50%"
+              labelLine={false}
+              label={CustomLabel}
+              outerRadius={80}
+              fill="#8884d8"
+              dataKey="value"
+            >
+              {revenueData.map((entry, index) => (
+                <Cell key={`cell-${entry.name}-${index}`} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </Pie>
+            <Tooltip content={<CustomTooltip />} />
+          </PieChart>
+        </ResponsiveContainer>
       </Box>
 
       {/* Legend */}
