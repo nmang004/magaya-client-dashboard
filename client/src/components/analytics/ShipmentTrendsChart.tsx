@@ -36,8 +36,6 @@ const ShipmentTrendsChart: React.FC<ShipmentTrendsChartProps> = ({
     );
   }
 
-  // Debug: Check if data exists and has content
-  console.log('Chart data:', data);
   
   if (!data || data.length === 0) {
     return (

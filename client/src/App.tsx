@@ -58,7 +58,12 @@ function App() {
               }}
               autoHideDuration={5000}
             >
-              <Router>
+              <Router
+                future={{
+                  v7_startTransition: true,
+                  v7_relativeSplatPath: true,
+                }}
+              >
                 <Suspense fallback={<PageLoader />}>
                   <Routes>
                     {/* Public routes */}

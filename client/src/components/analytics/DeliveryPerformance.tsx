@@ -32,7 +32,6 @@ const DeliveryPerformance: React.FC<DeliveryPerformanceProps> = ({ timeRange }) 
     { period: 'Week 8', onTime: 94.8, delayed: 5.2, early: 13.6 },
   ];
 
-  console.log('Delivery Performance Data:', deliveryData);
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {

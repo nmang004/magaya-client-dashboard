@@ -151,7 +151,7 @@ export const useOptimizedUpdates = <T>(
 // Hook for Web Vitals monitoring
 export const useWebVitals = (onMetric?: (metric: any) => void) => {
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || !onMetric) return;
 
     // Dynamically import web-vitals to avoid SSR issues
     import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {

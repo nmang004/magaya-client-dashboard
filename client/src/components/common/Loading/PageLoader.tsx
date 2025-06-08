@@ -77,29 +77,29 @@ const PageLoader: React.FC<PageLoaderProps> = ({
     switch (variant) {
       case 'page':
         return {
-          position: 'fixed',
+          position: 'fixed' as const,
           top: 0,
           left: 0,
           width: '100vw',
           height: '100vh',
           display: 'flex',
-          flexDirection: 'column',
+          flexDirection: 'column' as const,
           alignItems: 'center',
           justifyContent: 'center',
           background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
           zIndex: 9999,
-          overflow: 'hidden',
+          overflow: 'hidden' as const,
         };
       case 'component':
         return {
           display: 'flex',
-          flexDirection: 'column',
+          flexDirection: 'column' as const,
           alignItems: 'center',
           justifyContent: 'center',
           minHeight: '400px',
           background: alpha(theme.palette.background.paper, 0.8),
           borderRadius: 2,
-          position: 'relative',
+          position: 'relative' as const,
         };
       case 'inline':
         return {

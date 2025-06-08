@@ -167,12 +167,12 @@ export const TouchFab: React.FC<TouchFabProps> = ({
 
     switch (position) {
       case 'bottom-left':
-        return { position: 'fixed', bottom: baseBottom, left: baseSide };
+        return { position: 'fixed' as const, bottom: baseBottom, left: baseSide };
       case 'bottom-center':
-        return { position: 'fixed', bottom: baseBottom, left: '50%', transform: 'translateX(-50%)' };
+        return { position: 'fixed' as const, bottom: baseBottom, left: '50%', transform: 'translateX(-50%)' };
       case 'bottom-right':
       default:
-        return { position: 'fixed', bottom: baseBottom, right: baseSide };
+        return { position: 'fixed' as const, bottom: baseBottom, right: baseSide };
     }
   };
 

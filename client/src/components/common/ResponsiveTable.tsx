@@ -220,13 +220,13 @@ const ResponsiveTable: React.FC<ResponsiveTableProps> = ({
           <TableBody>
             <AnimatePresence>
               {data.map((row, index) => (
-                <motion.tr
+                <TableRow
                   key={index}
+                  component={motion.tr}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ delay: index * 0.03 }}
-                  component={TableRow}
                   hover
                   tabIndex={-1}
                   onClick={() => onRowClick?.(row)}
@@ -245,7 +245,7 @@ const ResponsiveTable: React.FC<ResponsiveTableProps> = ({
                       }
                     </TableCell>
                   ))}
-                </motion.tr>
+                </TableRow>
               ))}
             </AnimatePresence>
           </TableBody>

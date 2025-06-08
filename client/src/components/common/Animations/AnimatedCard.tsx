@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardProps, useTheme, alpha } from '@mui/material';
 import { motion, MotionProps, Variants } from 'framer-motion';
 
-interface AnimatedCardProps extends Omit<CardProps, 'sx'> {
+interface AnimatedCardProps extends Omit<CardProps, 'sx' | 'variant'> {
   children: React.ReactNode;
   variant?: 'elevation' | 'glassmorphism' | 'gradient' | 'outlined';
   hoverEffect?: 'lift' | 'glow' | 'scale' | 'tilt' | 'none';
