@@ -5,7 +5,7 @@ WORKDIR /usr/src/app
 
 # Install app dependencies
 COPY server/package.json server/package-lock.json ./
-RUN npm install --omit=dev
+RUN npm install --production
 
 # Copy app source
 COPY server/ .
