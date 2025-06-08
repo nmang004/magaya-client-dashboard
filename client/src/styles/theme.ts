@@ -1,0 +1,177 @@
+import { createTheme, alpha } from '@mui/material/styles';
+
+// Define custom color palette with gradients
+const colors = {
+  primary: {
+    main: '#1a73e8',
+    light: '#4285f4',
+    dark: '#1557b0',
+    gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+  },
+  secondary: {
+    main: '#f50057',
+    light: '#ff5983',
+    dark: '#bb002f',
+    gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+  },
+  success: {
+    main: '#00c853',
+    light: '#5efc82',
+    dark: '#009624',
+    gradient: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
+  },
+  warning: {
+    main: '#ff9800',
+    light: '#ffb74d',
+    dark: '#f57c00',
+    gradient: 'linear-gradient(135deg, #f2994a 0%, #f2c94c 100%)',
+  },
+  error: {
+    main: '#f44336',
+    light: '#e57373',
+    dark: '#d32f2f',
+    gradient: 'linear-gradient(135deg, #eb3349 0%, #f45c43 100%)',
+  },
+  background: {
+    default: '#f8fafc',
+    paper: '#ffffff',
+    dark: '#0f172a',
+    gradient: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+  },
+  glass: {
+    background: 'rgba(255, 255, 255, 0.7)',
+    border: 'rgba(255, 255, 255, 0.18)',
+  }
+};
+
+// Create custom shadows with colored variants
+const customShadows = {
+  primary: `0 12px 24px -4px ${alpha(colors.primary.main, 0.24)}`,
+  secondary: `0 12px 24px -4px ${alpha(colors.secondary.main, 0.24)}`,
+  success: `0 12px 24px -4px ${alpha(colors.success.main, 0.24)}`,
+  warning: `0 12px 24px -4px ${alpha(colors.warning.main, 0.24)}`,
+  error: `0 12px 24px -4px ${alpha(colors.error.main, 0.24)}`,
+  card: '0 0 2px 0 rgba(145, 158, 171, 0.2), 0 12px 24px -4px rgba(145, 158, 171, 0.12)',
+  glass: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
+};
+
+export const theme = createTheme({
+  palette: {
+    mode: 'light',
+    primary: colors.primary,
+    secondary: colors.secondary,
+    success: colors.success,
+    warning: colors.warning,
+    error: colors.error,
+    background: colors.background,
+  },
+  typography: {
+    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+    h1: {
+      fontWeight: 700,
+      fontSize: '3rem',
+      lineHeight: 1.2,
+      letterSpacing: '-0.02em',
+    },
+    h2: {
+      fontWeight: 700,
+      fontSize: '2.25rem',
+      lineHeight: 1.3,
+      letterSpacing: '-0.01em',
+    },
+    h3: {
+      fontWeight: 600,
+      fontSize: '1.875rem',
+      lineHeight: 1.4,
+    },
+    h4: {
+      fontWeight: 600,
+      fontSize: '1.5rem',
+      lineHeight: 1.4,
+    },
+    h5: {
+      fontWeight: 600,
+      fontSize: '1.25rem',
+      lineHeight: 1.5,
+    },
+    h6: {
+      fontWeight: 600,
+      fontSize: '1.125rem',
+      lineHeight: 1.5,
+    },
+    button: {
+      textTransform: 'none',
+      fontWeight: 600,
+    },
+  },
+  shape: {
+    borderRadius: 12,
+  },
+  shadows: [
+    'none',
+    customShadows.card,
+    ...Array(23).fill(customShadows.card),
+  ],
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: 8,
+          padding: '10px 24px',
+          fontSize: '0.875rem',
+          fontWeight: 600,
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          '&:hover': {
+            transform: 'translateY(-2px)',
+            boxShadow: customShadows.primary,
+          },
+        },
+        containedPrimary: {
+          background: colors.primary.gradient,
+          '&:hover': {
+            background: colors.primary.gradient,
+            boxShadow: customShadows.primary,
+          },
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          boxShadow: customShadows.card,
+          borderRadius: 16,
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          '&:hover': {
+            transform: 'translateY(-4px)',
+            boxShadow: customShadows.glass,
+          },
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundImage: 'none',
+        },
+        elevation1: {
+          boxShadow: customShadows.card,
+        },
+      },
+    },
+  },
+});
+
+// Add custom properties to theme
+declare module '@mui/material/styles' {
+  interface Theme {
+    customShadows: typeof customShadows;
+    gradients: typeof colors;
+  }
+  interface ThemeOptions {
+    customShadows?: typeof customShadows;
+    gradients?: typeof colors;
+  }
+}
+
+theme.customShadows = customShadows;
+theme.gradients = colors;
