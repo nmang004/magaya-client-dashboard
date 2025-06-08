@@ -70,7 +70,7 @@ dist
 
 # Gatsby files
 .cache/
-public
+# public - Commented out because React apps need client/public/ tracked
 
 # Serverless directories
 .serverless/
