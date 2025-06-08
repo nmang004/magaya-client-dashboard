@@ -26,6 +26,7 @@ const corsOptions = {
   origin: function (origin, callback) {
     const allowedOrigins = [
       'http://localhost:3000',
+      'http://localhost:3001',
       'https://your-app.netlify.app',
       process.env.CLIENT_URL
     ];
