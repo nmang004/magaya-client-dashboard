@@ -32,17 +32,17 @@ const ActivityTimeline: React.FC = () => {
   const getColorFromTheme = (colorName: string) => {
     switch (colorName) {
       case 'success':
-        return theme.palette.success.main;
+        return '#059669';
       case 'primary':
-        return theme.palette.primary.main;
+        return '#1e3a8a';
       case 'info':
-        return theme.palette.info.main;
+        return '#2563eb';
       case 'warning':
-        return theme.palette.warning.main;
+        return '#d97706';
       case 'error':
-        return theme.palette.error.main;
+        return '#dc2626';
       default:
-        return theme.palette.primary.main;
+        return '#1e3a8a';
     }
   };
 

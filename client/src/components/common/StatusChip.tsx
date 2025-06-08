@@ -28,7 +28,25 @@ const StatusChip: React.FC<StatusChipProps> = ({
     return icon;
   };
 
-  const chipColor = color || theme.palette.primary.main;
+  // Convert theme color names to actual color values
+  const getChipColor = () => {
+    if (!color) return theme.palette.primary.main;
+    
+    // Handle W.M. Stone brand colors
+    const colorMap: Record<string, string> = {
+      'primary': '#1e3a8a',
+      'secondary': '#1e40af', 
+      'success': '#059669',
+      'warning': '#d97706',
+      'error': '#dc2626',
+      'info': '#2563eb',
+    };
+    
+    // Return mapped color or use the color directly if it's already a hex/rgb value
+    return colorMap[color] || color;
+  };
+
+  const chipColor = getChipColor();
 
   return (
     <Chip

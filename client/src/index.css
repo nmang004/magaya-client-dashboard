@@ -1,10 +1,63 @@
+:root {
+  /* W.M. Stone Brand Colors */
+  --primary-blue: #1e3a8a;
+  --secondary-blue: #1e40af;
+  --white: #ffffff;
+  --light-gray: #f8fafc;
+  --medium-gray: #64748b;
+  --dark-gray: #334155;
+  
+  /* Status Colors */
+  --success-color: #059669;
+  --warning-color: #d97706;
+  --error-color: #dc2626;
+  --info-color: #2563eb;
+  
+  /* Typography */
+  --font-family: Inter, system-ui, -apple-system, sans-serif;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: var(--font-family);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--light-gray);
+}
+
+/* W.M. Stone Brand Styling */
+.sidebar {
+  background-color: var(--primary-blue) !important;
+}
+
+.header {
+  background-color: var(--white) !important;
+  border-bottom: 1px solid var(--medium-gray) !important;
+}
+
+.dashboard-card {
+  background-color: var(--white) !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+.btn-primary {
+  background-color: var(--primary-blue) !important;
+}
+
+.btn-primary:hover {
+  background-color: var(--secondary-blue) !important;
+}
+
+.nav-item.active {
+  background-color: var(--secondary-blue) !important;
+}
+
+.text-primary {
+  color: var(--primary-blue) !important;
+}
+
+.bg-primary {
+  background-color: var(--primary-blue) !important;
 }
 
 code {

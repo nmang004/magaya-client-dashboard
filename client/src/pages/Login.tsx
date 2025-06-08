@@ -126,7 +126,7 @@ const Login: React.FC = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)',
         position: 'relative',
         overflow: 'hidden',
       }}
@@ -141,9 +141,9 @@ const Login: React.FC = () => {
           bottom: 0,
           opacity: 0.1,
           background: `
-            radial-gradient(circle at 20% 50%, #667eea 0%, transparent 70%),
-            radial-gradient(circle at 80% 20%, #764ba2 0%, transparent 70%),
-            radial-gradient(circle at 40% 80%, #667eea 0%, transparent 70%)
+            radial-gradient(circle at 20% 50%, #1e3a8a 0%, transparent 70%),
+            radial-gradient(circle at 80% 20%, #1e40af 0%, transparent 70%),
+            radial-gradient(circle at 40% 80%, #1e3a8a 0%, transparent 70%)
           `,
         }}
       />
@@ -188,20 +188,20 @@ const Login: React.FC = () => {
                   component="h1"
                   sx={{
                     fontWeight: 700,
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    background: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)',
                     backgroundClip: 'text',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
                   }}
                 >
-                  Magaya Portal
+                  W.M. Stone Command Center
                 </Typography>
               </Box>
             </motion.div>
 
             <motion.div variants={itemVariants}>
               <Typography variant="h6" color="text.secondary" align="center" sx={{ mb: 4 }}>
-                Welcome back! Please login to your account.
+                Welcome back to W.M. Stone Command Center! Please login to your account.
               </Typography>
             </motion.div>
 
@@ -308,11 +308,11 @@ const Login: React.FC = () => {
                     mt: 3,
                     mb: 2,
                     py: 1.5,
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    boxShadow: '0 4px 15px 0 rgba(102, 126, 234, 0.4)',
+                    background: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)',
+                    boxShadow: '0 4px 15px 0 rgba(30, 58, 138, 0.4)',
                     '&:hover': {
-                      background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)',
-                      boxShadow: '0 6px 20px 0 rgba(102, 126, 234, 0.5)',
+                      background: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)',
+                      boxShadow: '0 6px 20px 0 rgba(30, 58, 138, 0.5)',
                     },
                   }}
                 >

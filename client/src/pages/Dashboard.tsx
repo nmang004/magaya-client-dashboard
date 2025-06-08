@@ -156,7 +156,7 @@ const Dashboard: React.FC = () => {
       title: 'Total Shipments',
       value: analytics?.data?.totalShipments || 0,
       icon: <LocalShipping />,
-      color: theme.palette.primary.main,
+      color: '#1e3a8a',
       trend: 12.5,
       onClick: () => navigate('/shipments'),
     },
@@ -164,7 +164,7 @@ const Dashboard: React.FC = () => {
       title: 'Active Shipments',
       value: analytics?.data?.activeShipments || 0,
       icon: <PendingActions />,
-      color: theme.palette.warning.main,
+      color: '#d97706',
       trend: -5.2,
       onClick: () => navigate('/shipments?status=in-transit'),
     },
@@ -172,7 +172,7 @@ const Dashboard: React.FC = () => {
       title: 'Delivered This Month',
       value: analytics?.data?.deliveredThisMonth || 0,
       icon: <CheckCircle />,
-      color: theme.palette.success.main,
+      color: '#059669',
       trend: 8.7,
       onClick: () => navigate('/shipments?status=delivered'),
     },
@@ -180,7 +180,7 @@ const Dashboard: React.FC = () => {
       title: 'On-Time Delivery',
       value: analytics?.data?.onTimeDeliveryRate || 0,
       icon: <Schedule />,
-      color: theme.palette.info.main,
+      color: '#2563eb',
       percentage: true,
       trend: 2.3,
     },
@@ -201,7 +201,7 @@ const Dashboard: React.FC = () => {
               variant="h4"
               sx={{
                 fontWeight: 700,
-                background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+                background: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)',
                 backgroundClip: 'text',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
@@ -210,7 +210,7 @@ const Dashboard: React.FC = () => {
               Dashboard Overview
             </Typography>
             <Typography variant="body1" color="text.secondary" sx={{ mt: 1 }}>
-              Welcome back! Here's what's happening with your shipments today.
+              Welcome back to W.M. Stone Command Center! Here's what's happening with your logistics operations today.
             </Typography>
           </Box>
           

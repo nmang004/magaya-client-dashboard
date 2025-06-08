@@ -28,7 +28,6 @@ import {
 import {
   Menu as MenuIcon,
   Dashboard,
-  LocalShipping,
   Assessment,
   Receipt,
   Settings,
@@ -43,6 +42,7 @@ import {
   Brightness7,
   CheckCircle,
   AttachMoney,
+  LocalShipping,
 } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../hooks/useAuth';
@@ -132,7 +132,7 @@ const DashboardLayout: React.FC = () => {
           alignItems: 'center',
           justifyContent: 'center',
           px: [1],
-          py: 3,
+          py: 2,
         }}
       >
         <motion.div
@@ -140,20 +140,17 @@ const DashboardLayout: React.FC = () => {
           animate={{ scale: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <LocalShipping sx={{ fontSize: 40, color: 'primary.main', mr: 2 }} />
+          <img
+            src="/wm-stone-logo.svg"
+            alt="W.M. Stone Logo"
+            style={{
+              height: '40px',
+              width: 'auto',
+              objectFit: 'contain',
+              maxWidth: '180px',
+            }}
+          />
         </motion.div>
-        <Typography
-          variant="h5"
-          sx={{
-            fontWeight: 700,
-            background: theme.gradients.primary.gradient,
-            backgroundClip: 'text',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-          }}
-        >
-          Magaya Portal
-        </Typography>
       </Toolbar>
       
       <Divider />
@@ -181,7 +178,7 @@ const DashboardLayout: React.FC = () => {
           </Avatar>
           <Box>
             <Typography variant="subtitle1" fontWeight={600}>
-              {user?.companyName}
+              W.M. Stone Logistics
             </Typography>
             <Typography variant="body2" color="text.secondary">
               {user?.email}

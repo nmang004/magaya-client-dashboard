@@ -12,8 +12,8 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ revenue, outstanding }) => 
   const theme = useTheme();
 
   const data = [
-    { name: 'Collected', value: revenue - outstanding, color: theme.palette.success.main },
-    { name: 'Outstanding', value: outstanding, color: theme.palette.warning.main },
+    { name: 'Collected', value: revenue - outstanding, color: '#059669' },
+    { name: 'Outstanding', value: outstanding, color: '#d97706' },
   ];
 
   const CustomTooltip = ({ active, payload }: any) => {

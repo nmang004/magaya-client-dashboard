@@ -102,12 +102,12 @@ const ShipmentChart: React.FC<ShipmentChartProps> = ({ data, height = 350 }) => 
       >
         <defs>
           <linearGradient id="shipmentGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor={theme.palette.primary.main} stopOpacity={0.4} />
-            <stop offset="95%" stopColor={theme.palette.primary.main} stopOpacity={0.1} />
+            <stop offset="5%" stopColor="#1e3a8a" stopOpacity={0.4} />
+            <stop offset="95%" stopColor="#1e3a8a" stopOpacity={0.1} />
           </linearGradient>
           <linearGradient id="deliveredGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor={theme.palette.success.main} stopOpacity={0.4} />
-            <stop offset="95%" stopColor={theme.palette.success.main} stopOpacity={0.1} />
+            <stop offset="5%" stopColor="#059669" stopOpacity={0.4} />
+            <stop offset="95%" stopColor="#059669" stopOpacity={0.1} />
           </linearGradient>
         </defs>
         <CartesianGrid strokeDasharray="3 3" stroke={alpha(theme.palette.divider, 0.5)} />
@@ -137,7 +137,7 @@ const ShipmentChart: React.FC<ShipmentChartProps> = ({ data, height = 350 }) => 
         <Area
           type="monotone"
           dataKey="shipments"
-          stroke={theme.palette.primary.main}
+          stroke="#1e3a8a"
           strokeWidth={2}
           fillOpacity={1}
           fill="url(#shipmentGradient)"
@@ -146,7 +146,7 @@ const ShipmentChart: React.FC<ShipmentChartProps> = ({ data, height = 350 }) => 
         <Area
           type="monotone"
           dataKey="delivered"
-          stroke={theme.palette.success.main}
+          stroke="#059669"
           strokeWidth={2}
           fillOpacity={1}
           fill="url(#deliveredGradient)"

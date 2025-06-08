@@ -1,5 +1,5 @@
 {
-  "name": "client",
+  "name": "wm-stone-command-center-client",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -17,6 +17,7 @@
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^27.5.2",
+    "@types/mapbox-gl": "^3.4.1",
     "@types/node": "^16.18.126",
     "@types/react": "^19.1.6",
     "@types/react-dom": "^19.1.6",
@@ -31,7 +32,7 @@
     "jspdf": "^2.5.1",
     "lodash": "^4.17.21",
     "lottie-react": "^2.4.0",
-    "mapbox-gl": "^3.0.1",
+    "mapbox-gl": "^3.12.0",
     "notistack": "^3.0.2",
     "react": "^19.1.0",
     "react-apexcharts": "^1.4.1",

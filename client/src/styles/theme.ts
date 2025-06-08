@@ -1,36 +1,36 @@
 import { createTheme, alpha } from '@mui/material/styles';
 
-// Define custom color palette with gradients
+// W.M. Stone Brand Color Palette
 const colors = {
   primary: {
-    main: '#1a73e8',
-    light: '#4285f4',
-    dark: '#1557b0',
-    gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    main: '#1e3a8a',
+    light: '#1e40af',
+    dark: '#1e293b',
+    gradient: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)',
   },
   secondary: {
-    main: '#f50057',
-    light: '#ff5983',
-    dark: '#bb002f',
-    gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+    main: '#1e40af',
+    light: '#3b82f6',
+    dark: '#1e3a8a',
+    gradient: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
   },
   success: {
-    main: '#00c853',
-    light: '#5efc82',
-    dark: '#009624',
-    gradient: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
+    main: '#059669',
+    light: '#10b981',
+    dark: '#047857',
+    gradient: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
   },
   warning: {
-    main: '#ff9800',
-    light: '#ffb74d',
-    dark: '#f57c00',
-    gradient: 'linear-gradient(135deg, #f2994a 0%, #f2c94c 100%)',
+    main: '#d97706',
+    light: '#f59e0b',
+    dark: '#b45309',
+    gradient: 'linear-gradient(135deg, #d97706 0%, #f59e0b 100%)',
   },
   error: {
-    main: '#f44336',
-    light: '#e57373',
-    dark: '#d32f2f',
-    gradient: 'linear-gradient(135deg, #eb3349 0%, #f45c43 100%)',
+    main: '#dc2626',
+    light: '#ef4444',
+    dark: '#b91c1c',
+    gradient: 'linear-gradient(135deg, #dc2626 0%, #ef4444 100%)',
   },
   background: {
     default: '#f8fafc',

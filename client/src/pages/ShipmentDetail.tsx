@@ -46,14 +46,312 @@ import { motion, AnimatePresence } from 'framer-motion';
 // React Query will be integrated later
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 // Import components
-import ShipmentTimeline from '../components/shipments/ShipmentTimeline';
-import ShipmentMap from '../components/shipments/ShipmentMap';
-import DocumentList from '../components/shipments/DocumentList';
-import ShipmentEvents from '../components/shipments/ShipmentEvents';
 import StatusChip from '../components/common/StatusChip';
-import { GlassCard } from '../components/common/Cards/GlassCard';
+
+// Set Mapbox access token
+mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN || 'pk.eyJ1IjoidGVzdC11c2VyIiwiYSI6ImNsZXhhbXBsZSJ9.example-token';
+
+// Temporary inline GlassCard to fix import issues
+const GlassCard: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <Card sx={{ 
+    background: 'rgba(255, 255, 255, 0.9)',
+    backdropFilter: 'blur(10px)',
+    WebkitBackdropFilter: 'blur(10px)',
+    border: '1px solid rgba(255, 255, 255, 0.18)',
+    boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.15)',
+    borderRadius: 2,
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    '&:hover': {
+      transform: 'translateY(-4px)',
+      boxShadow: '0 12px 48px 0 rgba(31, 38, 135, 0.25)',
+    },
+  }}>
+    {children}
+  </Card>
+);
+
+// Maritime Tracking Map Component
+const MaritimeTrackingMap: React.FC<{ shipmentData: any }> = ({ shipmentData }) => {
+  const mapContainer = React.useRef<HTMLDivElement>(null);
+  const map = React.useRef<mapboxgl.Map | null>(null);
+  const theme = useTheme();
+
+  React.useEffect(() => {
+    if (!mapContainer.current) return;
+
+    // Initialize map with maritime styling
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: 'mapbox://styles/mapbox/dark-v11', // Dark theme for maritime feel
+      center: [150, 35], // Pacific Ocean center point
+      zoom: 3,
+      pitch: 0,
+      bearing: 0,
+      projection: 'mercator' as any
+    });
+
+    // Wait for map to load
+    map.current.on('load', () => {
+      if (!map.current) return;
+
+      // Add ocean depth styling
+      map.current.setPaintProperty('water', 'fill-color', [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        0, '#0f172a',
+        5, '#1e293b',
+        10, '#334155'
+      ]);
+
+      // Shanghai coordinates
+      const shanghaiForecast = [121.4737, 31.2304];
+      // Los Angeles coordinates  
+      const losAngelesCoords = [-118.2437, 34.0522];
+      // Current position (estimated)
+      const currentPosition = [165, 35];
+
+      // Add route line
+      map.current.addSource('route', {
+        type: 'geojson',
+        data: {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'LineString',
+            coordinates: [shanghaiForecast, currentPosition, losAngelesCoords]
+          }
+        }
+      });
+
+      // Add completed route
+      map.current.addSource('completed-route', {
+        type: 'geojson',
+        data: {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'LineString',
+            coordinates: [shanghaiForecast, currentPosition]
+          }
+        }
+      });
+
+      // Add route styling
+      map.current.addLayer({
+        id: 'route-line',
+        type: 'line',
+        source: 'route',
+        layout: {
+          'line-join': 'round',
+          'line-cap': 'round'
+        },
+        paint: {
+          'line-color': 'rgba(148, 163, 184, 0.4)',
+          'line-width': 3,
+          'line-dasharray': [2, 2]
+        }
+      });
+
+      // Add completed route styling
+      map.current.addLayer({
+        id: 'completed-route-line',
+        type: 'line',
+        source: 'completed-route',
+        layout: {
+          'line-join': 'round',
+          'line-cap': 'round'
+        },
+        paint: {
+          'line-color': '#0ea5e9',
+          'line-width': 4,
+          'line-opacity': 0.8
+        }
+      });
+
+      // Add glow effect to completed route
+      map.current.addLayer({
+        id: 'completed-route-glow',
+        type: 'line',
+        source: 'completed-route',
+        layout: {
+          'line-join': 'round',
+          'line-cap': 'round'
+        },
+        paint: {
+          'line-color': '#0ea5e9',
+          'line-width': 8,
+          'line-opacity': 0.3,
+          'line-blur': 2
+        }
+      });
+
+      // Origin Port Marker (Shanghai)
+      const originMarker = new mapboxgl.Marker({
+        element: createPortMarker('#0ea5e9', '🏭')
+      })
+        .setLngLat(shanghaiForecast)
+        .setPopup(
+          new mapboxgl.Popup({ offset: 25, className: 'maritime-popup' })
+            .setHTML(`
+              <div style="padding: 12px; background: rgba(15, 23, 42, 0.95); color: white; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
+                <div style="color: #0ea5e9; font-weight: bold; margin-bottom: 4px;">${shipmentData.origin.port}</div>
+                <div style="color: rgba(255,255,255,0.8); font-size: 12px;">Port of Origin</div>
+                <div style="color: #10b981; font-size: 11px; margin-top: 4px;">✓ Departed Jun 01</div>
+              </div>
+            `)
+        )
+        .addTo(map.current);
+
+      // Destination Port Marker (Los Angeles)
+      const destMarker = new mapboxgl.Marker({
+        element: createPortMarker('#059669', '🏢')
+      })
+        .setLngLat(losAngelesCoords)
+        .setPopup(
+          new mapboxgl.Popup({ offset: 25, className: 'maritime-popup' })
+            .setHTML(`
+              <div style="padding: 12px; background: rgba(15, 23, 42, 0.95); color: white; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
+                <div style="color: #059669; font-weight: bold; margin-bottom: 4px;">${shipmentData.destination.port}</div>
+                <div style="color: rgba(255,255,255,0.8); font-size: 12px;">Destination Port</div>
+                <div style="color: #f59e0b; font-size: 11px; margin-top: 4px;">⏱ ETA: Jun 15</div>
+              </div>
+            `)
+        )
+        .addTo(map.current);
+
+      // Current Vessel Position (if in transit)
+      if (shipmentData.status === 'In Transit') {
+        const vesselMarker = new mapboxgl.Marker({
+          element: createVesselMarker()
+        })
+          .setLngLat(currentPosition)
+          .setPopup(
+            new mapboxgl.Popup({ offset: 25, className: 'maritime-popup' })
+              .setHTML(`
+                <div style="padding: 16px; background: rgba(15, 23, 42, 0.95); color: white; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
+                  <div style="color: #2563eb; font-weight: bold; margin-bottom: 4px;">${shipmentData.trackingNumber}</div>
+                  <div style="color: rgba(255,255,255,0.9); font-size: 12px; margin-bottom: 8px;">MV Ever Given • Pacific Ocean</div>
+                  <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                    <span style="color: #10b981; font-size: 11px;">Speed: 18.5 knots</span>
+                    <span style="color: #f59e0b; font-size: 11px;">Bearing: 045°</span>
+                  </div>
+                  <div style="color: #22d3ee; font-size: 11px;">🌊 Fair Weather • Calm Seas</div>
+                </div>
+              `)
+          )
+          .addTo(map.current);
+      }
+
+      // Fit map to show the route
+      const bounds = new mapboxgl.LngLatBounds();
+      bounds.extend(shanghaiForecast);
+      bounds.extend(losAngelesCoords);
+      bounds.extend(currentPosition);
+      
+      map.current.fitBounds(bounds, {
+        padding: { top: 100, bottom: 100, left: 100, right: 100 }
+      });
+    });
+
+    // Cleanup
+    return () => {
+      map.current?.remove();
+    };
+  }, [shipmentData, theme]);
+
+  // Helper function to create port markers
+  const createPortMarker = (color: string, emoji: string) => {
+    const el = document.createElement('div');
+    el.style.cssText = `
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, ${color} 0%, ${color}dd 100%);
+      border: 3px solid rgba(255,255,255,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      box-shadow: 0 8px 32px rgba(14, 165, 233, 0.4), inset 0 2px 4px rgba(255,255,255,0.1);
+      transition: all 0.3s ease;
+    `;
+    el.innerHTML = emoji;
+    
+    el.addEventListener('mouseenter', () => {
+      el.style.transform = 'scale(1.1)';
+    });
+    
+    el.addEventListener('mouseleave', () => {
+      el.style.transform = 'scale(1)';
+    });
+    
+    return el;
+  };
+
+  // Helper function to create vessel marker
+  const createVesselMarker = () => {
+    const el = document.createElement('div');
+    el.style.cssText = `
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+      border: 4px solid rgba(255,255,255,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 12px 40px rgba(37, 99, 235, 0.6), inset 0 2px 4px rgba(255,255,255,0.2);
+      animation: vesselPulse 3s ease-in-out infinite;
+      position: relative;
+    `;
+    
+    // Add vessel icon
+    el.innerHTML = `
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="white">
+        <path d="M21 6h-2l-1.27-3.18C17.53 2.34 17.04 2 16.5 2h-9C7.46 2 6.97 2.34 6.77 2.82L5.5 6H3c-.55 0-1 .45-1 1s.45 1 1 1h1.12L5 10v8c0 1.1.9 2 2 2h2c1.1 0 2-.9 2-2v-2h2v2c0 1.1.9 2 2 2h2c1.1 0 2-.9 2-2v-8l.88-2H21c.55 0 1-.45 1-1s-.45-1-1-1z"/>
+      </svg>
+    `;
+    
+    return el;
+  };
+
+  return (
+    <Box sx={{ 
+      position: 'relative', 
+      height: '100%', 
+      width: '100%',
+      '& .mapboxgl-popup-content': {
+        padding: 0,
+        borderRadius: '8px !important',
+        background: 'transparent !important'
+      },
+      '& .mapboxgl-popup-tip': {
+        borderTopColor: 'rgba(15, 23, 42, 0.95) !important'
+      }
+    }}>
+      <div ref={mapContainer} style={{ height: '100%', width: '100%' }} />
+      
+      {/* Add vessel pulse animation */}
+      <style>{`
+        @keyframes vesselPulse {
+          0%, 100% { 
+            box-shadow: 0 12px 40px rgba(37, 99, 235, 0.6), inset 0 2px 4px rgba(255,255,255,0.2), 0 0 0 0 rgba(37, 99, 235, 0.4);
+          }
+          50% { 
+            box-shadow: 0 12px 40px rgba(37, 99, 235, 0.6), inset 0 2px 4px rgba(255,255,255,0.2), 0 0 0 20px rgba(37, 99, 235, 0);
+          }
+        }
+      `}</style>
+    </Box>
+  );
+};
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -427,25 +725,187 @@ const ShipmentDetail: React.FC = () => {
 
         <Box sx={{ p: 3 }}>
           <TabPanel value={activeTab} index={0}>
-            <ShipmentTimeline events={shipmentData.events} />
+            <Box sx={{ p: 3 }}>
+              <Typography variant="h6" gutterBottom>Shipment Timeline</Typography>
+              {shipmentData.events.map((event, index) => (
+                <Box key={event.id} sx={{ mb: 2, p: 2, bgcolor: 'background.default', borderRadius: 1 }}>
+                  <Typography variant="subtitle2" fontWeight={600}>{event.title}</Typography>
+                  <Typography variant="body2" color="text.secondary">{event.description}</Typography>
+                  <Typography variant="caption" color="text.disabled">
+                    {format(new Date(event.timestamp), 'MMM dd, yyyy HH:mm')} - {event.location}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
           </TabPanel>
 
           <TabPanel value={activeTab} index={1}>
-            <Box sx={{ height: 500 }}>
-              <ShipmentMap
-                shipments={[shipmentData]}
-                center={{ lat: shipmentData.origin.lat, lng: shipmentData.origin.lng }}
-                zoom={4}
-              />
+            <Box sx={{ height: 600, position: 'relative', borderRadius: 2, overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}>
+              {/* Real Mapbox Maritime Map */}
+              <MaritimeTrackingMap shipmentData={shipmentData} />
+              
+              {/* Enhanced Information Panels - Overlay on real map */}
+              
+              {/* Navigation Status */}
+              <Paper sx={{ 
+                position: 'absolute',
+                top: 20,
+                right: 20,
+                p: 2.5,
+                minWidth: 200,
+                zIndex: 1000,
+                background: 'rgba(15, 23, 42, 0.95)',
+                backdropFilter: 'blur(15px)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: 2,
+                color: 'white'
+              }}>
+                <Typography variant="subtitle2" fontWeight={700} gutterBottom sx={{ color: '#0ea5e9' }}>
+                  🚢 Navigation Status
+                </Typography>
+                <Box sx={{ mb: 1.5 }}>
+                  <Typography variant="caption" color="rgba(255,255,255,0.8)">
+                    Total Distance: 8,547 nm
+                  </Typography>
+                  <Box sx={{ 
+                    mt: 0.5, 
+                    width: '100%', 
+                    height: 4, 
+                    bgcolor: 'rgba(255,255,255,0.1)', 
+                    borderRadius: 2,
+                    overflow: 'hidden'
+                  }}>
+                    <motion.div
+                      style={{
+                        width: '60%',
+                        height: '100%',
+                        background: 'linear-gradient(90deg, #059669 0%, #0ea5e9 100%)',
+                        borderRadius: 2
+                      }}
+                      initial={{ width: 0 }}
+                      animate={{ width: '60%' }}
+                      transition={{ duration: 2, delay: 1 }}
+                    />
+                  </Box>
+                </Box>
+                <Box sx={{ mb: 1 }}>
+                  <Typography variant="caption" color="rgba(255,255,255,0.8)">
+                    Completed: 5,128 nm (60%)
+                  </Typography>
+                </Box>
+                <Box sx={{ mb: 1 }}>
+                  <Typography variant="caption" color="rgba(255,255,255,0.8)">
+                    Remaining: 3,419 nm (40%)
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography variant="caption" sx={{ color: '#10b981', fontWeight: 600 }}>
+                    ETA: {format(new Date(shipmentData.estimatedDelivery), 'MMM dd, yyyy')} • 06:00 PST
+                  </Typography>
+                </Box>
+              </Paper>
+
+              {/* Weather & Conditions */}
+              <Paper sx={{ 
+                position: 'absolute',
+                bottom: 20,
+                left: 20,
+                p: 2,
+                zIndex: 1000,
+                background: 'rgba(15, 23, 42, 0.95)',
+                backdropFilter: 'blur(15px)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: 2,
+                color: 'white'
+              }}>
+                <Typography variant="subtitle2" fontWeight={700} gutterBottom sx={{ color: '#22d3ee' }}>
+                  🌊 Maritime Conditions
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                  <Box>
+                    <Typography variant="caption" color="rgba(255,255,255,0.8)">
+                      Weather: Fair
+                    </Typography>
+                    <Typography variant="caption" display="block" color="rgba(255,255,255,0.8)">
+                      Sea State: Calm (2-3ft)
+                    </Typography>
+                    <Typography variant="caption" display="block" color="rgba(255,255,255,0.8)">
+                      Wind: 12 knots SW
+                    </Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="caption" color="rgba(255,255,255,0.8)">
+                      Visibility: 10+ nm
+                    </Typography>
+                    <Typography variant="caption" display="block" color="rgba(255,255,255,0.8)">
+                      Current: 1.2 knots E
+                    </Typography>
+                    <Typography variant="caption" display="block" sx={{ color: '#10b981' }}>
+                      Status: Optimal
+                    </Typography>
+                  </Box>
+                </Box>
+              </Paper>
+
+              {/* Progress Timeline */}
+              <Paper sx={{ 
+                position: 'absolute',
+                bottom: 20,
+                right: 20,
+                p: 2,
+                zIndex: 1000,
+                background: 'rgba(15, 23, 42, 0.95)',
+                backdropFilter: 'blur(15px)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: 2,
+                color: 'white',
+                minWidth: 200
+              }}>
+                <Typography variant="subtitle2" fontWeight={700} gutterBottom sx={{ color: '#a855f7' }}>
+                  📍 Milestone Timeline
+                </Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#10b981' }} />
+                    <Typography variant="caption" color="#10b981">Jun 01 - Departed Shanghai</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#2563eb' }} />
+                    <Typography variant="caption" color="#2563eb">Jun 08 - Pacific Transit</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: 'rgba(255,255,255,0.4)' }} />
+                    <Typography variant="caption" color="rgba(255,255,255,0.7)">Jun 15 - Arrive LA</Typography>
+                  </Box>
+                </Box>
+              </Paper>
             </Box>
           </TabPanel>
 
           <TabPanel value={activeTab} index={2}>
-            <DocumentList documents={shipmentData.documents} />
+            <Box sx={{ p: 3 }}>
+              <Typography variant="h6" gutterBottom>Documents ({shipmentData.documents.length})</Typography>
+              {shipmentData.documents.map((doc) => (
+                <Box key={doc.id} sx={{ mb: 2, p: 2, bgcolor: 'background.default', borderRadius: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Box>
+                    <Typography variant="subtitle2" fontWeight={600}>{doc.name}</Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {doc.size} • {doc.type} • {format(new Date(doc.uploadDate), 'MMM dd, yyyy')}
+                    </Typography>
+                  </Box>
+                  <Button size="small" startIcon={<Download />}>Download</Button>
+                </Box>
+              ))}
+            </Box>
           </TabPanel>
 
           <TabPanel value={activeTab} index={3}>
-            <ShipmentEvents shipment={shipmentData} />
+            <Box sx={{ p: 3 }}>
+              <Typography variant="h6" gutterBottom>Recent Events</Typography>
+              <Typography variant="body2" color="text.secondary">
+                Track all activities and updates for shipment {shipmentData.trackingNumber}
+              </Typography>
+            </Box>
           </TabPanel>
         </Box>
       </GlassCard>

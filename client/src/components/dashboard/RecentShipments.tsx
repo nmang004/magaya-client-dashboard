@@ -60,12 +60,12 @@ const RecentShipments: React.FC<RecentShipmentsProps> = ({ shipments, loading })
 
   const getStatusColor = (status: string) => {
     const statusColors: Record<string, string> = {
-      'In Transit': theme.palette.info.main,
-      'Delivered': theme.palette.success.main,
-      'Pending': theme.palette.warning.main,
-      'Delayed': theme.palette.error.main,
+      'In Transit': '#2563eb',
+      'Delivered': '#059669',
+      'Pending': '#d97706',
+      'Delayed': '#dc2626',
     };
-    return statusColors[status] || theme.palette.grey[500];
+    return statusColors[status] || '#64748b';
   };
 
   return (
