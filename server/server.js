@@ -28,12 +28,20 @@ const corsOptions = {
       'http://localhost:3000',
       'http://localhost:3001',
       'https://wmstone.netlify.app',
-      process.env.CLIENT_URL
-    ];
+      'https://wmstone.netlify.app/',
+      process.env.CLIENT_URL,
+      process.env.CLIENT_URL?.replace(/\/$/, ''), // Remove trailing slash
+      process.env.CLIENT_URL?.replace(/\/$/, '') + '/' // Add trailing slash
+    ].filter(Boolean); // Remove undefined values
+    
+    console.log('CORS Check - Origin:', origin);
+    console.log('CORS Check - Allowed Origins:', allowedOrigins);
+    console.log('CORS Check - CLIENT_URL:', process.env.CLIENT_URL);
     
     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
+      console.log('CORS Check - REJECTED:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
