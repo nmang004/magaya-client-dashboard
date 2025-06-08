@@ -642,7 +642,7 @@ const ShipmentDetail: React.FC = () => {
     actualDelivery: null,
     carrier: {
       name: 'Maersk Line',
-      logo: '/api/placeholder/32/32',
+      logo: null,
       vesselName: 'Ever Given',
       voyageNumber: 'MG2401'
     },

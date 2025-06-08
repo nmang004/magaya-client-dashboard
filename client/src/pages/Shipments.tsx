@@ -89,7 +89,7 @@ const Shipments: React.FC = () => {
           country: 'USA',
           coordinates: { lat: 34.0522, lng: -118.2437 }
         },
-        carrier: { name: 'Maersk Line', logo: '/api/placeholder/24/24' },
+        carrier: { name: 'Maersk Line', logo: null },
         estimatedDelivery: '2024-06-15T00:00:00Z',
         cargo: { value: 125000 },
       },
@@ -109,7 +109,7 @@ const Shipments: React.FC = () => {
           country: 'USA',
           coordinates: { lat: 40.7128, lng: -74.0060 }
         },
-        carrier: { name: 'COSCO', logo: '/api/placeholder/24/24' },
+        carrier: { name: 'COSCO', logo: null },
         estimatedDelivery: '2024-06-10T00:00:00Z',
         cargo: { value: 89000 },
       },
@@ -129,7 +129,7 @@ const Shipments: React.FC = () => {
           country: 'Germany',
           coordinates: { lat: 53.5511, lng: 9.9937 }
         },
-        carrier: { name: 'MSC', logo: '/api/placeholder/24/24' },
+        carrier: { name: 'MSC', logo: null },
         estimatedDelivery: '2024-06-20T00:00:00Z',
         cargo: { value: 156000 },
       },
@@ -149,7 +149,7 @@ const Shipments: React.FC = () => {
           country: 'USA',
           coordinates: { lat: 25.7617, lng: -80.1918 }
         },
-        carrier: { name: 'CMA CGM', logo: '/api/placeholder/24/24' },
+        carrier: { name: 'CMA CGM', logo: null },
         estimatedDelivery: '2024-06-18T00:00:00Z',
         cargo: { value: 67000 },
       },
@@ -169,7 +169,7 @@ const Shipments: React.FC = () => {
           country: 'USA',
           coordinates: { lat: 47.6062, lng: -122.3321 }
         },
-        carrier: { name: 'ONE', logo: '/api/placeholder/24/24' },
+        carrier: { name: 'ONE', logo: null },
         estimatedDelivery: '2024-06-12T00:00:00Z',
         cargo: { value: 198000 },
       },
