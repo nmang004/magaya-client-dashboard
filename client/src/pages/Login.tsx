@@ -31,6 +31,7 @@ import { useAuth } from '../hooks/useAuth';
 // import Particles from 'react-particles';
 // import { loadSlim } from 'tsparticles-slim';
 import toast from 'react-hot-toast';
+import { TouchButton } from '../components/common/TouchOptimized';
 
 // Validation schema
 const schema = yup.object({
@@ -72,6 +73,20 @@ const Login: React.FC = () => {
   const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile device
+  useEffect(() => {
+    const checkIsMobile = () => {
+      const mobile = window.innerWidth <= 768 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      setIsMobile(mobile);
+      console.log('Device detection:', { mobile, width: window.innerWidth, userAgent: navigator.userAgent });
+    };
+    
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
 
   const {
     register,
@@ -93,6 +108,10 @@ const Login: React.FC = () => {
 
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
+    
+    // Add mobile debugging
+    console.log('Login attempt started', { email: data.email, mobile: window.innerWidth <= 768 });
+    
     try {
       await login(data.email, data.password);
       
@@ -102,11 +121,14 @@ const Login: React.FC = () => {
         duration: 2000,
       });
 
+      console.log('Login successful, redirecting...');
+      
       // Redirect after animation
       setTimeout(() => {
         navigate('/dashboard');
       }, 1500);
     } catch (error: any) {
+      console.error('Login error:', error);
       toast.error(error.message || 'Invalid email or password', {
         icon: '❌',
       });
@@ -213,6 +235,33 @@ const Login: React.FC = () => {
                   Email: demo@client1.com<br />
                   Password: demo123
                 </Typography>
+                {isMobile && (
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    sx={{ mt: 1 }}
+                    onClick={() => {
+                      // Auto-fill demo credentials for mobile
+                      const emailInput = document.querySelector('input[name="email"]') as HTMLInputElement;
+                      const passwordInput = document.querySelector('input[name="password"]') as HTMLInputElement;
+                      
+                      if (emailInput && passwordInput) {
+                        emailInput.value = 'demo@client1.com';
+                        passwordInput.value = 'demo123';
+                        
+                        // Trigger React's onChange events
+                        const emailEvent = new Event('input', { bubbles: true });
+                        const passwordEvent = new Event('input', { bubbles: true });
+                        emailInput.dispatchEvent(emailEvent);
+                        passwordInput.dispatchEvent(passwordEvent);
+                        
+                        toast.success('Demo credentials filled!');
+                      }
+                    }}
+                  >
+                    Fill Demo Credentials
+                  </Button>
+                )}
               </Alert>
             </motion.div>
 
@@ -220,7 +269,14 @@ const Login: React.FC = () => {
             <Box
               component="form"
               onSubmit={handleSubmit(onSubmit)}
-              sx={{ mt: 1, width: '100%' }}
+              sx={{ 
+                mt: 1, 
+                width: '100%',
+                // Prevent mobile browser zoom on input focus
+                '& input': {
+                  fontSize: { xs: '16px', md: '14px' }, // 16px prevents zoom on iOS
+                }
+              }}
             >
               <motion.div variants={itemVariants}>
                 <TextField
@@ -295,19 +351,20 @@ const Login: React.FC = () => {
 
               <motion.div
                 variants={itemVariants}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
               >
-                <Button
+                <TouchButton
                   type="submit"
                   fullWidth
                   variant="contained"
                   size="large"
                   disabled={isLoading}
+                  touchOptimized={true}
+                  hapticFeedback={true}
                   sx={{
                     mt: 3,
                     mb: 2,
                     py: 1.5,
+                    minHeight: 56, // Ensure large touch target
                     background: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)',
                     boxShadow: '0 4px 15px 0 rgba(30, 58, 138, 0.4)',
                     '&:hover': {
@@ -324,8 +381,61 @@ const Login: React.FC = () => {
                       <ArrowForward sx={{ ml: 1 }} />
                     </>
                   )}
-                </Button>
+                </TouchButton>
               </motion.div>
+
+              {/* Mobile fallback login button */}
+              {isMobile && (
+                <motion.div variants={itemVariants}>
+                  <TouchButton
+                    fullWidth
+                    variant="outlined"
+                    size="large"
+                    disabled={isLoading}
+                    touchOptimized={true}
+                    hapticFeedback={true}
+                    onClick={async () => {
+                      // Direct demo login for mobile troubleshooting
+                      console.log('Mobile direct login clicked');
+                      setIsLoading(true);
+                      try {
+                        await login('demo@client1.com', 'demo123');
+                        toast.success('Welcome back! Redirecting to dashboard...', {
+                          icon: '🚀',
+                          duration: 2000,
+                        });
+                        setTimeout(() => {
+                          navigate('/dashboard');
+                        }, 1500);
+                      } catch (error: any) {
+                        console.error('Direct login error:', error);
+                        toast.error(error.message || 'Login failed', {
+                          icon: '❌',
+                        });
+                      } finally {
+                        setIsLoading(false);
+                      }
+                    }}
+                    sx={{
+                      mb: 2,
+                      py: 1.5,
+                      minHeight: 56,
+                      color: 'primary.main',
+                      borderColor: 'primary.main',
+                      '&:hover': {
+                        backgroundColor: 'primary.main',
+                        color: 'white',
+                      },
+                    }}
+                  >
+                    {isLoading ? (
+                      <CircularProgress size={24} />
+                    ) : (
+                      'Quick Demo Login (Mobile)'
+                    )}
+                  </TouchButton>
+                </motion.div>
+              )}
 
               <motion.div variants={itemVariants}>
                 <Divider sx={{ my: 3 }}>OR</Divider>

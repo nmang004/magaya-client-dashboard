@@ -240,7 +240,7 @@ const Shipments: React.FC = () => {
       renderCell: (params: GridRenderCellParams) => (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Avatar
-            src={params.row.carrier.logo}
+            src={params.row.carrier.logo || undefined}
             sx={{ width: 24, height: 24, mr: 1 }}
           />
           <Typography variant="body2">{params.row.carrier.name}</Typography>

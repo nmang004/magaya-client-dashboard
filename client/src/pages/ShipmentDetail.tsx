@@ -906,7 +906,7 @@ const ShipmentDetail: React.FC = () => {
                   </Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                     <Avatar
-                      src={shipmentData.carrier.logo}
+                      src={shipmentData.carrier.logo || undefined}
                       sx={{ width: 32, height: 32, mr: 1 }}
                     />
                     <Typography variant="body1" fontWeight={600}>
